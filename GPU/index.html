@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPU programming &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Outlook" href="../outlook/" />
+    <link rel="prev" title="Parallelization" href="../parallelization/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Julia primer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Developing in Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-computing/">Scientific computing and data science</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performant-code/">Writing performant Julia code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GPU programming</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#access-to-gpus-in-the-cloud">Access to GPUs in the cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gpus-vs-cpus">GPUs vs CPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-array-interface">The array interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vendor-libraries">Vendor libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#higher-order-abstractions">Higher-order abstractions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-your-own-kernels">Writing your own kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-networks-on-the-gpu">Neural networks on the GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>GPU programming</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/GPU.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gpu-programming">
+<h1>GPU programming<a class="headerlink" href="#gpu-programming" title="Permalink to this headline"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>What are the high-level and low-level methods for GPU programming in Julia?</p></li>
+<li><p>How do CuArrays work?</p></li>
+<li><p>How are GPU kernels written?</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching</p></li>
+<li><p>40 min exercises</p></li>
+</ul>
+</div>
+<p>Julia has first-class support for GPU programming through the following
+packages that target GPUs from all three major vendors:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cuda.juliagpu.org/stable/">CUDA.jl</a> for NVIDIA GPUs</p></li>
+<li><p><a class="reference external" href="https://amdgpu.juliagpu.org/stable/">AMDGPU.jl</a> for AMD GPUs</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaGPU/oneAPI.jl">oneAPI.jl</a> for Intel GPUs</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code> is the most mature, <code class="docutils literal notranslate"><span class="pre">AMDGPU.jl</span></code> is somewhat behind but still
+ready for general use, while <code class="docutils literal notranslate"><span class="pre">oneAPI.jl</span></code> is still under heavy development.</p>
+<p>NVIDIA still dominates the HPC accelerator market and we will focus here
+on using <code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code> - the API of <code class="docutils literal notranslate"><span class="pre">AMDGPU.jl</span></code> is however completely analogous
+and translation between the two is straightforward.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code> offers both user-friendly high-level abstractions that require
+very little programming effort and a lower level approach for writing kernels
+for fine-grained control.</p>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h2>
+<p>Installing <code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;CUDA&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To use the Julia GPU stack, one needs to have NVIDIA drivers installed and
+the CUDA toolkit to go with the drivers. Supercomputers with NVIDIA GPUs
+will already have both. For installation on other workstations one can follow the
+<a class="reference external" href="https://www.nvidia.com/Download/index.aspx">instructions from NVIDIA</a> to
+install the drivers, and let Julia automatically install the correct version
+of the toolkit upon the first import: <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">CUDA</span></code>.</p>
+</div>
+<div class="section" id="access-to-gpus-in-the-cloud">
+<h2>Access to GPUs in the cloud<a class="headerlink" href="#access-to-gpus-in-the-cloud" title="Permalink to this headline"></a></h2>
+<p>To fully experience the walkthrough in this episode we need to have access
+to an NVIDIA GPU and the necessary software stack. Access to a HPC system with
+GPUs and a Julia installation will work. Another option is to use
+<a class="reference external" href="https://juliahub.com/lp/">JuliaHub</a>, a commercial cloud platform from
+<a class="reference external" href="https://juliacomputing.com/">Julia Computing</a> with
+access to Julia’s ecosystem of packages and GPU hardware.</p>
+<div class="figure align-default">
+<a class="reference external image-reference" href="https://juliahub.com/lp/"><img alt="../_images/juliahub-logo-vector.jpeg" src="../_images/juliahub-logo-vector.jpeg" /></a>
+</div>
+<p>Or one can use
+<a class="reference external" href="https://colab.research.google.com/">Google Colab</a> which requires a Google
+account and a manual Julia installation, but using simple NVIDIA GPUs is free.
+Google Colab does not support Julia, but a
+<a class="reference external" href="https://github.com/Dsantra92/Julia-on-Colab">helpful person on the internet</a>
+has created a Colab notebook that can be reused for Julia computing on Colab.</p>
+</div>
+<div class="section" id="gpus-vs-cpus">
+<h2>GPUs vs CPUs<a class="headerlink" href="#gpus-vs-cpus" title="Permalink to this headline"></a></h2>
+<p>We first briefly discuss the hardware differences between GPUs and CPUs.
+This will help us understand the rationale behind the GPU programming methods
+described later.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/CPUAndGPU.png" src="../_images/CPUAndGPU.png" />
+<p class="caption"><span class="caption-text">A comparison of CPU and GPU architectures. A CPU has a complex core
+structure and packs several cores on a single chip. GPU cores are very simple
+in comparison and they share data, allowing to pack more cores on a single chip.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</div>
+<p>Some key aspects of GPUs that need to be kept in mind:</p>
+<ul class="simple">
+<li><p>The large number of compute elements on a GPU (in the thousands) can enable
+extreme scaling for <cite>data parallel</cite> tasks (single-program multiple-data, SPMD)</p></li>
+<li><p>GPUs have their own memory. This means that data needs to be transfered to
+and from the GPU during the execution of a program.</p></li>
+<li><p>Cores in a GPU are arranged into a particular structure. At the highest level
+they are divided into “streaming multiprocessors” (SMs). Some of these details are
+important when writing own GPU kernels.</p></li>
+</ul>
+</div>
+<div class="section" id="the-array-interface">
+<h2>The array interface<a class="headerlink" href="#the-array-interface" title="Permalink to this headline"></a></h2>
+<p>GPU programming with Julia can be as simple as using <code class="docutils literal notranslate"><span class="pre">CuArray</span></code>
+(<code class="docutils literal notranslate"><span class="pre">ROCArray</span></code> for AMD) instead of regular <code class="docutils literal notranslate"><span class="pre">Base.Array</span></code> arrays.
+The <code class="docutils literal notranslate"><span class="pre">CuArray</span></code> type closely resembles <code class="docutils literal notranslate"><span class="pre">Base.Array</span></code> which enables
+us to write generic code which works on both types.</p>
+<p>The following code copies an array to the GPU and executes a simple operation on
+the GPU:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">CUDA</span>
+
+<span class="n">A_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">A_d</span> <span class="o">.+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Moving an array back from the GPU to the CPU is simple:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="n">A_d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, the overhead of copying data to the GPU makes such simple calculations
+very slow.</p>
+<p>Let’s have a look at a more realistic example: matrix multiplication. We
+create two random arrays, one on the CPU and one on the GPU, and compare the
+performance:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">BenchmarkTools</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="mi">13</span><span class="p">,</span> <span class="mi">2</span><span class="o">^</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">A_d</span> <span class="o">=</span> <span class="n">CUDA</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="mi">13</span><span class="p">,</span> <span class="mi">2</span><span class="o">^</span><span class="mi">13</span><span class="p">)</span>
+
+<span class="nd">@btime</span> <span class="n">A</span> <span class="o">*</span> <span class="n">A</span>
+<span class="nd">@btime</span> <span class="n">A_d</span> <span class="o">*</span> <span class="n">A_d</span>
+</pre></div>
+</div>
+<p>There should be a dramatic speedup!</p>
+<div class="section" id="vendor-libraries">
+<h3>Vendor libraries<a class="headerlink" href="#vendor-libraries" title="Permalink to this headline"></a></h3>
+<p>The NVIDIA libraries contain precompiled kernels for common
+operations like matrix multiplication (<cite>cuBLAS</cite>), fast Fourier transforms
+(<cite>cuFFT</cite>), linear solvers (<cite>cuSOLVER</cite>), etc. These kernels are wrapped
+in <code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code> and can be used directly with <code class="docutils literal notranslate"><span class="pre">CuArrays</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># create a 100x100 Float32 random array and an uninitialized array</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">CUDA</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="kt">CuArray</span><span class="p">{</span><span class="kt">Float32</span><span class="p">,</span> <span class="mi">2</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="c"># use cuBLAS for matrix multiplication</span>
+<span class="k">using</span> <span class="n">LinearAlgebra</span>
+<span class="n">mul!</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+
+<span class="c"># use cuSOLVER for QR factorization</span>
+<span class="n">qr</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="c"># solve equation A*X == B</span>
+<span class="n">A</span> <span class="o">\</span> <span class="n">B</span>
+
+<span class="c"># use cuFFT for FFT</span>
+<span class="k">using</span> <span class="n">CUDA</span><span class="o">.</span><span class="n">CUFFT</span>
+<span class="n">fft</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="higher-order-abstractions">
+<h3>Higher-order abstractions<a class="headerlink" href="#higher-order-abstractions" title="Permalink to this headline"></a></h3>
+<p>A powerful way to program GPUs with arrays is through Julia’s higher-order array
+abstractions. The simple element-wise addition we saw above, <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">.+=</span> <span class="pre">1</span></code>, is
+an example of this, but more general constructs can be created with
+<code class="docutils literal notranslate"><span class="pre">broadcast</span></code>, <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">reduce</span></code>, <code class="docutils literal notranslate"><span class="pre">accumulate</span></code> etc:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">broadcast</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">map</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">reduce</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">accumulate</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">broadcast</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="k">do</span> <span class="n">x</span>
+    <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">map</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="k">do</span> <span class="n">x</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">reduce</span><span class="p">(</span><span class="o">+</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">accumulate</span><span class="p">(</span><span class="o">+</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+<p>Let’s see if we can GPU-port the <code class="docutils literal notranslate"><span class="pre">sqrt_sum</span></code> function we saw in an earlier
+episode using these methods.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">sqrt_sum</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">zero</span><span class="p">(</span><span class="n">eltype</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">eachindex</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="nd">@inbounds</span> <span class="n">s</span> <span class="o">+=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">s</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>First the square root should be taken of each element of the array,
+which we can do with <code class="docutils literal notranslate"><span class="pre">map(sqrt,A)</span></code>. Next we perform a reduction with the <code class="docutils literal notranslate"><span class="pre">+</span></code>
+operator. Combining these steps:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">([</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">;</span> <span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">;</span> <span class="mi">7</span> <span class="mi">8</span> <span class="mi">9</span><span class="p">])</span>
+
+<span class="n">reduce</span><span class="p">(</span><span class="o">+</span><span class="p">,</span> <span class="n">map</span><span class="p">(</span><span class="n">sqrt</span><span class="p">,</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>GPU porting complete!</p>
+</div>
+</div>
+<div class="section" id="writing-your-own-kernels">
+<h2>Writing your own kernels<a class="headerlink" href="#writing-your-own-kernels" title="Permalink to this headline"></a></h2>
+<p>Not all algorithms can be made to work with the higher-level abstractions
+in <code class="docutils literal notranslate"><span class="pre">CUDA.jl</span></code>. In such cases it’s necessary to explicitly write our own GPU kernel.</p>
+<p>Let’s take a simple example, adding two vectors:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="nd">@inbounds</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">.+</span> <span class="mf">5.0</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">vadd!</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can already run this on the GPU with the <code class="docutils literal notranslate"><span class="pre">&#64;cuda</span></code> macro, which
+will compile <code class="docutils literal notranslate"><span class="pre">vadd!</span></code> into a GPU kernel and launch it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">A_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">B_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">C_d</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">B_d</span><span class="p">)</span>
+
+<span class="nd">@cuda</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But the performance would be terrible because each thread on the GPU
+would be performing the same loop. So we have to remove the loop over all
+elements and instead use the special <code class="docutils literal notranslate"><span class="pre">threadIdx</span></code> and <code class="docutils literal notranslate"><span class="pre">blockDim</span></code> functions,
+analogous respectively to <code class="docutils literal notranslate"><span class="pre">threadid</span></code> and <code class="docutils literal notranslate"><span class="pre">nthreads</span></code> for multithreading.</p>
+<div class="figure align-center">
+<img alt="../_images/MappingBlocksToSMs.png" src="../_images/MappingBlocksToSMs.png" />
+</div>
+<p>We can split work between the GPU threads like this:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">()</span><span class="o">.</span><span class="n">x</span>   <span class="c"># linear indexing, so only use `x`</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="n">blockDim</span><span class="p">()</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">index</span><span class="o">:</span><span class="n">stride</span><span class="ss">:length</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="k">return</span>
+<span class="k">end</span>
+
+<span class="c"># run using 256 threads</span>
+<span class="nd">@cuda</span> <span class="n">threads</span><span class="o">=</span><span class="mi">256</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But we can parallelize even further. GPUs have a limited number of threads they
+can run on a single SM, but they also have multiple SMs.
+To take advantage of them all, we need to run a kernel with multiple blocks:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">()</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">blockIdx</span><span class="p">()</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">()</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">length</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="k">return</span>
+<span class="k">end</span>
+
+<span class="c"># smallest integer larger than or equal to length(A_d)/threads</span>
+<span class="n">numblocks</span> <span class="o">=</span> <span class="n">cld</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">A_d</span><span class="p">),</span> <span class="mi">256</span><span class="p">)</span>
+
+<span class="c"># run using 256 threads</span>
+<span class="nd">@cuda</span> <span class="n">threads</span><span class="o">=</span><span class="mi">256</span> <span class="n">blocks</span><span class="o">=</span><span class="n">numblocks</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We have been using 256 GPU threads, but this might not be optimal. The more
+threads we use the better is the performance, but the maximum number depends
+both on the GPU and the nature of the kernel. To optimize this choice, we can
+first create the kernel without launching it, query it for the number of threads
+supported, and then launch the compiled kernel:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># compile kernel</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="nd">@cuda</span> <span class="n">launch</span><span class="o">=</span><span class="nb">false</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+<span class="c"># extract configuration via occupancy API</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">launch_configuration</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="c"># number of threads should not exceed size of array</span>
+<span class="n">threads</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span>
+<span class="c"># smallest integer larger than or equal to length(A)/threads</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="n">cld</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">threads</span><span class="p">)</span>
+
+<span class="c"># launch kernel with specific configuration</span>
+<span class="n">kernel</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">;</span> <span class="n">threads</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline"></a></h2>
+<p>We can not use the regular Julia profilers to profile GPU code. However,
+we can use NVIDIA’s <cite>nvprof</cite> profiler simply by starting Julia like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nvprof --profile-from-start off julia
+</pre></div>
+</div>
+<p>To then profile a particular function, we prefix by the <code class="docutils literal notranslate"><span class="pre">CUDA.&#64;profile</span></code> macro:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">CUDA</span>
+<span class="n">A_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">.+</span> <span class="mf">5.0</span><span class="p">)</span>
+<span class="n">B_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">C_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">similar</span><span class="p">(</span><span class="n">B_d</span><span class="p">))</span>
+<span class="c"># first run it once to force compilation</span>
+<span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+<span class="n">CUDA</span><span class="o">.</span><span class="nd">@profile</span> <span class="n">vadd!</span><span class="p">(</span><span class="n">C_d</span><span class="p">,</span> <span class="n">A_d</span><span class="p">,</span> <span class="n">B_d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When we quit the REPL again, the profiler process will print information about
+the executed kernels and API calls.</p>
+</div>
+<div class="section" id="neural-networks-on-the-gpu">
+<h2>Neural networks on the GPU<a class="headerlink" href="#neural-networks-on-the-gpu" title="Permalink to this headline"></a></h2>
+<p>Flux has <a class="reference external" href="https://fluxml.ai/Flux.jl/stable/gpu/">inbuilt support for running on GPUs</a> and
+provides simple macros and convenience functions
+to transfer data and models to the GPU.
+For example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">xtest</span><span class="p">),</span> <span class="p">(</span><span class="n">ytrain</span><span class="p">,</span> <span class="n">ytest</span><span class="p">)</span> <span class="o">=</span> <span class="n">partition</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">multi</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span>
+<span class="n">xtrain</span><span class="p">,</span> <span class="n">xtest</span> <span class="o">=</span> <span class="kt">Float32</span><span class="o">.</span><span class="p">(</span><span class="kt">Array</span><span class="p">(</span><span class="n">xtrain</span><span class="p">)</span><span class="o">&#39;</span><span class="p">),</span> <span class="kt">Float32</span><span class="o">.</span><span class="p">(</span><span class="kt">Array</span><span class="p">(</span><span class="n">xtest</span><span class="p">)</span><span class="o">&#39;</span><span class="p">)</span>    <span class="o">|&gt;</span> <span class="n">gpu</span>
+<span class="n">ytrain</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onehotbatch</span><span class="p">(</span><span class="n">ytrain</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span> <span class="o">|&gt;</span> <span class="n">gpu</span>
+<span class="n">ytest</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onehotbatch</span><span class="p">(</span><span class="n">ytest</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>   <span class="o">|&gt;</span> <span class="n">gpu</span>
+
+<span class="n">n_features</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_neurons</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">(</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_neurons</span><span class="p">),</span>
+        <span class="n">BatchNorm</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">relu</span><span class="p">),</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span>
+        <span class="n">softmax</span><span class="p">)</span>  <span class="o">|&gt;</span> <span class="n">gpu</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<div class="admonition-port-heatequation-jl-to-gpu exercise important admonition" id="exercise-0">
+<p class="admonition-title">Port HeatEquation.jl to GPU</p>
+<p>Write a kernel for the <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> function!</p>
+<p>Start with this refactored function which accepts arrays:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">evolve!</span><span class="p">(</span><span class="n">currdata</span><span class="o">::</span><span class="kt">AbstractArray</span><span class="p">,</span> <span class="n">prevdata</span><span class="o">::</span><span class="kt">AbstractArray</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">currdata</span><span class="p">)</span> <span class="o">.-</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span>
+            <span class="nd">@inbounds</span> <span class="n">xderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">dx</span><span class="o">^</span><span class="mi">2</span>
+            <span class="nd">@inbounds</span> <span class="n">yderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span>
+            <span class="nd">@inbounds</span> <span class="n">currdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">xderiv</span> <span class="o">+</span> <span class="n">yderiv</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Now start implementing a GPU kernel version <code class="docutils literal notranslate"><span class="pre">evolve_gpu!</span></code>.</p>
+<ol class="arabic">
+<li><p>The kernel function needs to end with <code class="docutils literal notranslate"><span class="pre">return</span></code> or <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">nothing</span></code>.</p></li>
+<li><p>The arrays are two-dimensional, so you will need both the <code class="docutils literal notranslate"><span class="pre">.x</span></code> and <code class="docutils literal notranslate"><span class="pre">.y</span></code>
+parts of <code class="docutils literal notranslate"><span class="pre">threadIdx()</span></code>, <code class="docutils literal notranslate"><span class="pre">blockDim()</span></code> and <code class="docutils literal notranslate"><span class="pre">blockIdx()</span></code>.</p>
+<ul class="simple">
+<li><p>Does it matter how you match the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> dimensions of the
+threads and blocks to the dimensions of the data (i.e. rows and columns)?</p></li>
+</ul>
+</li>
+<li><p>You also need to specify tuples
+for the number of threads and blocks in the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> dimensions,
+e.g. <code class="docutils literal notranslate"><span class="pre">threads</span> <span class="pre">=</span> <span class="pre">(32,</span> <span class="pre">32)</span></code> and similarly for <code class="docutils literal notranslate"><span class="pre">blocks</span></code> (using <code class="docutils literal notranslate"><span class="pre">cld</span></code>).</p>
+<ul class="simple">
+<li><p>Note the hardware limitations: the product of x and y threads cannot
+exceed it.</p></li>
+</ul>
+</li>
+<li><p>For debugging, you can print from inside a kernel using <code class="docutils literal notranslate"><span class="pre">&#64;cuprintln</span></code>
+(e.g. to print thread numbers). It will only print during the first
+execution - redefine the function again to print again.
+If you get warnings or errors relating to types, you can use the code
+introspection macro <code class="docutils literal notranslate"><span class="pre">&#64;device_code_warntype</span></code> to see the types inferred
+by the compiler.</p></li>
+<li><p>Check correctness of your results! To test that <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> and <code class="docutils literal notranslate"><span class="pre">evolve_gpu!</span></code>
+give (approximately) the same results, for example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">dx</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">A1</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">);</span>
+<span class="n">A2</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">);</span>
+<span class="n">A1_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">A1</span><span class="p">)</span>
+<span class="n">A2_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">A2</span><span class="p">)</span>
+
+<span class="n">evolve!</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="n">evolve_gpu!</span><span class="p">(</span><span class="n">A1_d</span><span class="p">,</span> <span class="n">A2_d</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="n">all</span><span class="p">(</span><span class="n">A1</span> <span class="o">.≈</span> <span class="kt">Array</span><span class="p">(</span><span class="n">A1_d</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+<li><p>Perform some benchmarking of the <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> and <code class="docutils literal notranslate"><span class="pre">evolve_gpu!</span></code>
+functions for arrays of various sizes and with different choices
+of <code class="docutils literal notranslate"><span class="pre">nthreads</span></code>. You will need to prefix the
+kernel execution with the <code class="docutils literal notranslate"><span class="pre">CUDA.&#64;sync</span></code> macro
+to let the CPU wait for the GPU kernel to finish (otherwise you
+would be measuring the time it takes to only launch the kernel):</p></li>
+<li><p>Compare your Julia code with the
+<a class="reference external" href="https://github.com/cschpc/heat-equation/blob/main/cuda/core_cuda.cu">corresponding CUDA version</a>
+to enjoy the (relative) simplicity of Julia!</p></li>
+</ol>
+<div class="admonition-solution solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Solution</p>
+<p>This is one possible GPU kernel version of <code class="docutils literal notranslate"><span class="pre">evolve!</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">evolve_gpu!</span><span class="p">(</span><span class="n">currdata</span><span class="p">,</span> <span class="n">prevdata</span><span class="p">,</span> <span class="n">dx2</span><span class="p">,</span> <span class="n">dy2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">currdata</span><span class="p">)</span> <span class="o">.-</span> <span class="mi">2</span>
+    <span class="c"># which index (i or j) you assign to x and y matters enormously!</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">blockIdx</span><span class="p">()</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">()</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">()</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">blockIdx</span><span class="p">()</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">blockDim</span><span class="p">()</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">()</span><span class="o">.</span><span class="n">y</span>
+    <span class="c">#@cuprintln(&quot;threads $i $j&quot;) #only for debugging!</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nx</span><span class="o">+</span><span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">ny</span><span class="o">+</span><span class="mi">2</span>
+        <span class="nd">@inbounds</span> <span class="n">xderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">dx2</span>
+        <span class="nd">@inbounds</span> <span class="n">yderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">dy2</span>
+        <span class="nd">@inbounds</span> <span class="n">currdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prevdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">xderiv</span> <span class="o">+</span> <span class="n">yderiv</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="nb">nothing</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>To test it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">dx</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">M1</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">);</span>
+<span class="n">M2</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">);</span>
+
+<span class="c"># copy to GPU and convert to Float32</span>
+<span class="n">M1_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">cu</span><span class="p">(</span><span class="n">M1</span><span class="p">))</span>
+<span class="n">M2_d</span> <span class="o">=</span> <span class="n">CuArray</span><span class="p">(</span><span class="n">cu</span><span class="p">(</span><span class="n">M2</span><span class="p">))</span>
+
+<span class="c"># set number of threads and blocks</span>
+<span class="n">nthreads</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">numblocks</span> <span class="o">=</span> <span class="n">cld</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">)</span>
+
+<span class="c"># call cpu and gpu versions</span>
+<span class="n">evolve!</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span> <span class="n">M2</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+<span class="nd">@cuda</span> <span class="n">threads</span><span class="o">=</span><span class="p">(</span><span class="n">nthreads</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">)</span> <span class="n">blocks</span><span class="o">=</span><span class="p">(</span><span class="n">numblocks</span><span class="p">,</span> <span class="n">numblocks</span><span class="p">)</span> <span class="n">evolve_gpu!</span><span class="p">(</span><span class="n">M1_d</span><span class="p">,</span> <span class="n">M2_d</span><span class="p">,</span> <span class="n">dx</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="c"># element-wise comparison</span>
+<span class="n">all</span><span class="p">(</span><span class="n">M1</span> <span class="o">.≈</span> <span class="kt">Array</span><span class="p">(</span><span class="n">M1_d</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To benchmark:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">BenchmarkTools</span>
+<span class="nd">@btime</span> <span class="n">evolve!</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span> <span class="n">M2</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+<span class="nd">@btime</span> <span class="n">CUDA</span><span class="o">.</span><span class="nd">@sync</span> <span class="nd">@cuda</span> <span class="n">threads</span><span class="o">=</span><span class="p">(</span><span class="n">nthreads</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">)</span> <span class="n">blocks</span><span class="o">=</span><span class="p">(</span><span class="n">numblocks</span><span class="p">,</span> <span class="n">numblocks</span><span class="p">)</span> <span class="n">evolve_gpu!</span><span class="p">(</span><span class="n">M1_d</span><span class="p">,</span> <span class="n">M2_d</span><span class="p">,</span> <span class="n">dx</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-port-a-neural-network-to-the-gpu exercise important admonition" id="exercise-1">
+<p class="admonition-title">Port a neural network to the GPU</p>
+<p>Take the neural network model that you trained in the
+<a class="reference internal" href="../scientific-computing/#dlexercise"><span class="std std-ref">Deep learning exercise</span></a> and GPU-port it!</p>
+<p>Additional reading material that might help:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://fluxml.ai/Flux.jl/stable/gpu/">https://fluxml.ai/Flux.jl/stable/gpu/</a></p></li>
+<li><p><a class="reference external" href="https://fluxml.ai/tutorials/2020/09/15/deep-learning-flux.html">https://fluxml.ai/tutorials/2020/09/15/deep-learning-flux.html</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://juliagpu.org/">https://juliagpu.org/</a></p></li>
+<li><p><a class="reference external" href="https://cuda.juliagpu.org/stable/">https://cuda.juliagpu.org/stable/</a></p></li>
+<li><p><a class="reference external" href="https://github.com/maleadt/juliacon21-gpu_workshop">https://github.com/maleadt/juliacon21-gpu_workshop</a></p></li>
+<li><p><a class="reference external" href="https://fluxml.ai/tutorials/2020/09/15/deep-learning-flux.html">https://fluxml.ai/tutorials/2020/09/15/deep-learning-flux.html</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parallelization/" class="btn btn-neutral float-left" title="Parallelization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../outlook/" class="btn btn-neutral float-right" title="Outlook" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

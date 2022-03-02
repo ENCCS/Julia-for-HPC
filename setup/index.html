@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Instructor’s guide" href="../guide/" />
+    <link rel="prev" title="Outlook" href="../outlook/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Julia primer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Developing in Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-computing/">Scientific computing and data science</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performant-code/">Writing performant Julia code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU/">GPU programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-julia">Installing Julia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-visual-studio-code">Installing Visual Studio Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-the-vscode-julia-extension">Installing the VSCode Julia extension</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-installing-jupyterlab-and-a-julia-kernel">(Optional) Installing JupyterLab and a Julia kernel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#add-julia-to-jupyterlab">Add Julia to JupyterLab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-julia-notebook">Create a Julia notebook</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Setup</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/setup.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
+<div class="section" id="installing-julia">
+<h2>Installing Julia<a class="headerlink" href="#installing-julia" title="Permalink to this headline"></a></h2>
+<p>First download the latest stable release of Julia for your operating system
+<a class="reference external" href="https://julialang.org/downloads/#current_stable_release">from the julialang.org website</a>.</p>
+<div class="figure align-center">
+<img alt="../_images/installers.png" src="../_images/installers.png" />
+</div>
+<p>Follow the instructions to complete the installation.</p>
+<p>Platform-specific instructions can be found at
+<a class="reference external" href="https://julialang.org/downloads/platform/">https://julialang.org/downloads/platform/</a>. It is convenient to be able
+to run Julia from the command line, so follow the instructions for
+“adding Julia to PATH”.
+For Windows users who do not already have a terminal installed,
+we recommend to install the
+<a class="reference external" href="https://www.microsoft.com/sv-se/p/windows-terminal/9n0dx20hk701?rtc=1&amp;activetab=pivot:overviewtab">Windows Terminal from the Microsoft Store</a>.</p>
+<p>After these steps, please ensure that you can open the Julia REPL by
+typing <code class="docutils literal notranslate"><span class="pre">julia</span></code> on the command line in a terminal, or by clicking the Julia
+icon on your Desktop or Applications folder. You should
+see something like in the image below (nevermind the version number).</p>
+<div class="figure align-center">
+<img alt="../_images/repl.png" src="../_images/repl.png" />
+</div>
+<p>To exit the REPL again, hit <code class="docutils literal notranslate"><span class="pre">CTRL-d</span></code> or type <code class="docutils literal notranslate"><span class="pre">exit()</span></code>.</p>
+</div>
+<div class="section" id="installing-visual-studio-code">
+<h2>Installing Visual Studio Code<a class="headerlink" href="#installing-visual-studio-code" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://code.visualstudio.com/Download">https://code.visualstudio.com/Download</a></p>
+<div class="section" id="installing-the-vscode-julia-extension">
+<h3>Installing the VSCode Julia extension<a class="headerlink" href="#installing-the-vscode-julia-extension" title="Permalink to this headline"></a></h3>
+<p>Click the Extensions button on the left-side menu, type <cite>Julia</cite> and
+click <cite>Install</cite> to install the Julia extension.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/vscode_extensionbutton.png"><img alt="../_images/vscode_extensionbutton.png" src="../_images/vscode_extensionbutton.png" style="width: 316.0px; height: 240.0px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/vscode_juliaextension.png"><img alt="../_images/vscode_juliaextension.png" src="../_images/vscode_juliaextension.png" style="width: 253.0px; height: 138.0px;" /></a>
+</div>
+<p>You now need to configure the Julia extension and set the path
+to the Julia executable. Click the cogwheel button next to the Julia
+extension:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/vscode_extensionconfig.png"><img alt="../_images/vscode_extensionconfig.png" src="../_images/vscode_extensionconfig.png" style="width: 245.0px; height: 138.0px;" /></a>
+</div>
+<p>Then find the “Julia: Executable Path” field:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/vscode_execpath.png"><img alt="../_images/vscode_execpath.png" src="../_images/vscode_execpath.png" style="width: 534.0px; height: 102.0px;" /></a>
+</div>
+<p>In this field enter the path to the Julia executable that you have installed.</p>
+<p>If you are curious, scroll through the other possible configuration settings!</p>
+</div>
+</div>
+<div class="section" id="optional-installing-jupyterlab-and-a-julia-kernel">
+<h2>(Optional) Installing JupyterLab and a Julia kernel<a class="headerlink" href="#optional-installing-jupyterlab-and-a-julia-kernel" title="Permalink to this headline"></a></h2>
+<p>JupyterLab can most easily be installed through the full
+Anaconda distribution of Python packages or the minimal
+Miniconda distribution.</p>
+<p>To install Anaconda, visit
+<a class="reference external" href="https://www.anaconda.com/products/individual">https://www.anaconda.com/products/individual</a> , download an installer
+for your operating system and follow the instructions. JupyterLab and
+an IPython kernel are included in the distribution.</p>
+<p>To install Miniconda, visit
+<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a> , download an installer
+for your operating system and follow the instructions.  After
+activating a <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment in your terminal, you can install
+JupyterLab with the command <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">jupyterlab</span></code>.</p>
+<div class="section" id="add-julia-to-jupyterlab">
+<h3>Add Julia to JupyterLab<a class="headerlink" href="#add-julia-to-jupyterlab" title="Permalink to this headline"></a></h3>
+<p>To be able to use a Julia kernel in a Jupyter notebook you need to
+install the <code class="docutils literal notranslate"><span class="pre">IJulia</span></code> Julia package. Open the Julia REPL and type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;IJulia&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-julia-notebook">
+<h3>Create a Julia notebook<a class="headerlink" href="#create-a-julia-notebook" title="Permalink to this headline"></a></h3>
+<p>Now you should be able to open up a JupyterLab session by typing
+<code class="docutils literal notranslate"><span class="pre">jupyter-lab</span></code> in a terminal, and create a Julia notebook by clicking
+on Julia in the JupyterLab Launcher or by selecting File &gt; New &gt; Notebook
+and selecting a Julia kernel in the drop-down menu that appears.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../outlook/" class="btn btn-neutral float-left" title="Outlook" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../guide/" class="btn btn-neutral float-right" title="Instructor’s guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

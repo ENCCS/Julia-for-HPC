@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developing in Julia &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Scientific computing and data science" href="../scientific-computing/" />
+    <link rel="prev" title="Special features of Julia" href="../overview/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Julia primer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developing in Julia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tooling">Tooling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-vscode-with-the-julia-extension">Using VSCode with the Julia extension</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#revise">Revise</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#structure-of-a-julia-package">Structure of a Julia package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-package-manager">The package manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environments">Environments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-environments-for-other-projects">Creating environments for other projects</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-new-project">Creating a new project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-computing/">Scientific computing and data science</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performant-code/">Writing performant Julia code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU/">GPU programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Developing in Julia</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/development.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="developing-in-julia">
+<h1>Developing in Julia<a class="headerlink" href="#developing-in-julia" title="Permalink to this headline"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>What development tools exist for Julia?</p></li>
+<li><p>How can I write modules and packages in Julia?</p></li>
+<li><p>How can reprodubible environments be created?</p></li>
+<li><p>How are tests written in Julia?</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching</p></li>
+<li><p>30 min exercises</p></li>
+</ul>
+</div>
+<div class="section" id="tooling">
+<h2>Tooling<a class="headerlink" href="#tooling" title="Permalink to this headline"></a></h2>
+<p>We will now switch from the Julia REPL to
+<a class="reference external" href="https://code.visualstudio.com/">Visual Studio Code (VSCode)</a>.
+While VSCode with the <a class="reference external" href="https://code.visualstudio.com/docs/languages/julia">Julia extension</a>
+is the prefered development environment for many Julia programmers, there
+are some alternatives:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://jupyter.org/">Jupyter</a>:
+Jupyter notebooks are familiar to many Python and R users.</p></li>
+<li><p><a class="reference external" href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a>:
+Offers a similar notebook experience to Jupyter, but
+understands global references between cells, and
+reactively re-evaluates cells affected by a code change.</p></li>
+<li><p>A text editor like nano, emacs, vim, etc., followed by running your
+code with <code class="docutils literal notranslate"><span class="pre">julia</span> <span class="pre">filename.jl</span></code>. There are also plugins for Julia for
+major text editors - do an internet search on e.g. “emacs julia” or “vim julia”
+to find out more.</p></li>
+</ul>
+<div class="section" id="using-vscode-with-the-julia-extension">
+<h3>Using VSCode with the Julia extension<a class="headerlink" href="#using-vscode-with-the-julia-extension" title="Permalink to this headline"></a></h3>
+<p>After following the <a class="reference internal" href="../setup/"><span class="doc">Setup</span></a> instructions to install VSCode and the Julia extension,
+we can fire up a VSCode session and explore the functionality.</p>
+<div class="admonition-getting-acquainted-with-vscode type-along important admonition" id="type-along-0">
+<p class="admonition-title">Getting acquainted with VSCode</p>
+<ul class="simple">
+<li><p>Open up VSCode either through a file browser or via the terminal command <code class="docutils literal notranslate"><span class="pre">code</span></code>.</p></li>
+<li><p>We should see a <em>Get started</em> page where we can create a new file, open a
+folder or clone a git repository. The same options can be found in the Explorer
+menu in the left sidebar.</p></li>
+<li><p>Let’s create a new text file. VSCode will ask for a language, which you can select
+from a menu, but we can also save it as a <code class="docutils literal notranslate"><span class="pre">.jl</span></code> file and VSCode will understand
+it’s a Julia file.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">println(&quot;hello</span> <span class="pre">world!&quot;)</span></code> in the file and save it to a new folder (e.g.
+a new folder <code class="docutils literal notranslate"><span class="pre">workshop/</span></code> under a <code class="docutils literal notranslate"><span class="pre">julia/</span></code> folder in your home directory).</p></li>
+<li><p>To execute the file, we can press the <em>play</em> button in the top right corner,
+or open up the command palette search with <code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+p</span></code> (<code class="docutils literal notranslate"><span class="pre">CMD</span></code> on Mac)
+and type <code class="docutils literal notranslate"><span class="pre">Julia:</span> <span class="pre">Execute</span> <span class="pre">active</span> <span class="pre">File</span> <span class="pre">in</span> <span class="pre">REPL</span></code>, or by hitting <code class="docutils literal notranslate"><span class="pre">Shift+Enter</span></code>
+on the code line like in Jupyter.</p></li>
+<li><p>A REPL should open up below our code file and show the result of the execution.</p></li>
+<li><p>The <a class="reference external" href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">Julia in VSCode</a>
+documentation is a useful reference.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline"></a></h2>
+<p>Code written in Julia is normally encapsulated in modules. Modules
+have their own global scope (namespace) separate from the global scope of
+other modules (including <code class="docutils literal notranslate"><span class="pre">Main</span></code>, the top-level module).
+Modules are imported by either the <code class="docutils literal notranslate"><span class="pre">using</span></code> or <code class="docutils literal notranslate"><span class="pre">import</span></code> keywords.
+The difference is how variables defined in the module are brought into scope:</p>
+<ul class="simple">
+<li><p>With <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">ModuleName</span></code>, all <cite>exported</cite> names (variables and functions) in the
+module are brought into scope. Non-exported names are still available via
+<code class="docutils literal notranslate"><span class="pre">ModuleName.func()</span></code> or <code class="docutils literal notranslate"><span class="pre">ModuleName.var1</span></code>.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">ModuleName</span></code>, all the module’s names need to be qualified, e.g.
+<code class="docutils literal notranslate"><span class="pre">ModuleName.func()</span></code> or <code class="docutils literal notranslate"><span class="pre">ModuleName.var1</span></code>.</p></li>
+</ul>
+<div class="admonition-creating-a-module type-along important admonition" id="type-along-1">
+<p class="admonition-title">Creating a module</p>
+<p>Let’s create a toy module based on the code in the previous section.
+Save it in a new file <code class="docutils literal notranslate"><span class="pre">Points.jl</span></code> under e.g. <code class="docutils literal notranslate"><span class="pre">$HOME/julia/workshop</span></code>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">Points</span>
+
+<span class="k">export</span> <span class="n">Point</span><span class="p">,</span> <span class="n">sumsquare</span>
+
+<span class="k">struct</span> <span class="kt">Point</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span>
+    <span class="n">x</span><span class="o">::</span><span class="kt">T</span>
+    <span class="n">y</span><span class="o">::</span><span class="kt">T</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">p1</span><span class="o">::</span><span class="kt">Point</span><span class="p">,</span> <span class="n">p2</span><span class="o">::</span><span class="kt">Point</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>We can now import and use the module. First we include it either by
+<code class="docutils literal notranslate"><span class="pre">include(&quot;Points.jl&quot;)</span></code> or by hitting <code class="docutils literal notranslate"><span class="pre">Shift+Enter</span></code> to evaluate the whole file.
+Since our new module is defined within
+the current <code class="docutils literal notranslate"><span class="pre">Main</span></code> module, we need to import it with a dot in front, <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">.Points</span></code>
+(an alternative is to add our current path with the Points module to Julia’s
+LOAD_PATH, <code class="docutils literal notranslate"><span class="pre">push!(LOAD_PATH,</span> <span class="pre">pwd())</span></code>, after which no dot is needed):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="o">.</span><span class="n">Points</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">p3</span> <span class="o">=</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+
+<span class="c"># list all names exported from our module</span>
+<span class="n">names</span><span class="p">(</span><span class="n">Points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It should return a list of the three symbols <code class="docutils literal notranslate"><span class="pre">:Points</span></code>, <code class="docutils literal notranslate"><span class="pre">:Point</span></code>
+and <code class="docutils literal notranslate"><span class="pre">:sumsquare</span></code>.</p>
+</div>
+<div class="section" id="revise">
+<h3>Revise<a class="headerlink" href="#revise" title="Permalink to this headline"></a></h3>
+<p>Before <a class="reference external" href="https://timholy.github.io/Revise.jl/stable/">Revise.jl</a>
+was created, it was necessary to restart the Julia
+REPL when developing a package for new changes to take effect in the REPL.
+This is because calling <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">Example</span></code> JIT-compiles the package.
+With <code class="docutils literal notranslate"><span class="pre">Revise</span></code> loaded this is no longer needed - it cleverly finds what code
+has been modified and reloads only that.</p>
+<p>Revise is automatically loaded in VSCode, but if you are developing in
+another editor you will need to install <code class="docutils literal notranslate"><span class="pre">Revise</span></code> and when developing a
+package always do <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">Revise</span></code> before <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">MyPackage</span></code>.</p>
+<p>A caveat when using VSCode is that when developing a script (i.e. not a full package),
+files need to be included in Revise-tracked mode with <code class="docutils literal notranslate"><span class="pre">includet(&quot;MyScript&quot;)</span></code>.
+When developing packages everything works automatically.</p>
+</div>
+</div>
+<div class="section" id="structure-of-a-julia-package">
+<h2>Structure of a Julia package<a class="headerlink" href="#structure-of-a-julia-package" title="Permalink to this headline"></a></h2>
+<p>Julia packages contain one top-level module (submodules are allowed),
+defined in a source file under <code class="docutils literal notranslate"><span class="pre">src/</span></code> with the same name as the
+package itself.</p>
+<p>All functions, variables and custom types of a package can be put in one
+module file or (more commonly) into multiple files named
+according to their functionality.</p>
+<div class="admonition-inspecting-a-julia-package type-along important admonition" id="type-along-2">
+<p class="admonition-title">Inspecting a Julia package</p>
+<p>Have a look at an example Julia package to get an
+overview of its structure: <a class="reference external" href="https://github.com/JuliaLang/Example.jl">https://github.com/JuliaLang/Example.jl</a></p>
+<p>Pay particular attention to the following aspects:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Project.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">Manifest.toml</span></code> files</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">test/</span></code> subfolder if it exists</p></li>
+<li><p>Files in the <code class="docutils literal notranslate"><span class="pre">src/</span></code> subfolder</p></li>
+<li><p>The structure of the main module file and the other files under <code class="docutils literal notranslate"><span class="pre">src/</span></code></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-package-manager">
+<h2>The package manager<a class="headerlink" href="#the-package-manager" title="Permalink to this headline"></a></h2>
+<p>Julia comes with a powerful inbuilt package manager to install
+and remove packages, manage dependencies and create isolated
+software environments.</p>
+<ul class="simple">
+<li><p>To enter the package manager from a Julia session we
+can hit the <code class="docutils literal notranslate"><span class="pre">]</span></code> character, after which the prompt
+changes to <code class="docutils literal notranslate"><span class="pre">pkg&gt;</span></code>.</p></li>
+<li><p>To see all available options, type <cite>help</cite>. For example, we see that to
+install a new package we should type <code class="docutils literal notranslate"><span class="pre">pkg&gt;</span> <span class="pre">add</span> <span class="pre">some-package</span></code>.</p></li>
+<li><p>To go back to the REPL, hit backspace or <code class="docutils literal notranslate"><span class="pre">^C</span></code>.</p></li>
+</ul>
+<div class="admonition-a-syntax-convention callout admonition" id="callout-0">
+<p class="admonition-title">A syntax convention</p>
+<p>Instead of using <code class="docutils literal notranslate"><span class="pre">]</span></code> to enter the package manager, this lesson
+will use the following syntax to manage packages through the <code class="docutils literal notranslate"><span class="pre">Pkg</span></code> API.
+This way, code blocks can be copied directly into the REPL and executed:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;some-package&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Let us get familiar with the package manager by working with the
+Example package that ships with Julia.</p>
+<div class="admonition-installing-and-using-a-package type-along important admonition" id="type-along-3">
+<p class="admonition-title">Installing and using a package</p>
+<p>Install <code class="docutils literal notranslate"><span class="pre">Example.jl</span></code> using the package manager:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Import and inspect it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Example</span>
+<span class="n">names</span><span class="p">(</span><span class="n">Example</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Look at the help page of the functions:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># type ?domath and ?hello to see the documentation</span>
+<span class="n">domath</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">hello</span><span class="p">(</span><span class="s">&quot;Julia&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="environments">
+<h3>Environments<a class="headerlink" href="#environments" title="Permalink to this headline"></a></h3>
+<p>It is good practice to develop software in isolated environments.
+This enables us to use different versions of packages for different
+projects and avoids dependency clashes. It is also the best way to
+ensure <cite>reproducibility</cite> because the exact same software environment
+can be easily created on different computers.</p>
+<div class="admonition-creating-an-environment type-along important admonition" id="type-along-4">
+<p class="admonition-title">Creating an environment</p>
+<p>After navigating to a suitable directory,
+we create a new environment by:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">pwd</span><span class="p">()</span>
+<span class="n">mkdir</span><span class="p">(</span><span class="s">&quot;example-project&quot;</span><span class="p">)</span>
+<span class="n">cd</span><span class="p">(</span><span class="s">&quot;example-project&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output tells us that a new environment has been created in our
+current directory - specifically using the <code class="docutils literal notranslate"><span class="pre">Project.toml</span></code> file
+(don’t look for it yet as it’s only created after we add the first package).</p>
+<p>We now add the <cite>Example</cite> package:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The status command shows the version of the <cite>Example</cite> package installed in
+our new <code class="docutils literal notranslate"><span class="pre">Project.toml</span></code> file.
+What does this file contain?
+Try printing it through the Julia shell by
+typing <code class="docutils literal notranslate"><span class="pre">;</span></code> followed by <code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">Project.toml</span></code>
+(or <code class="docutils literal notranslate"><span class="pre">println(String(read(&quot;Project.toml&quot;)))</span></code> in Julia mode).</p>
+<p>We can also see that there’s another file in the <code class="docutils literal notranslate"><span class="pre">example-project</span></code> directory
+called <code class="docutils literal notranslate"><span class="pre">Manifest.toml</span></code>.</p>
+</div>
+<div class="admonition-project-toml-and-manifest-toml callout admonition" id="callout-1">
+<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Project.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">Manifest.toml</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Project.toml</span></code> describes a project on a high level, including
+package dependencies and compatibilities, metadata such as <cite>authors</cite>,
+<cite>name</cite>, <cite>version</cite> etc. It can be modified by hand.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Manifest.toml</span></code>
+is an absolute record of the state of packages in an environment and
+can be used to create identical Julia environments on different computers.
+It should not be modified by hand.</p></li>
+</ul>
+</div>
+<div class="admonition-project-environments-inherit-from-default-environment callout admonition" id="callout-2">
+<p class="admonition-title">Project environments inherit from default environment</p>
+<p>A possibly confusing aspect when working with environments is that
+you have access to packages in the default environment (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;v1.7</span></code>)
+even if you have activated a project environment. One thus has to be careful
+to add all needed packages to a project environment so that the same environment
+can be generated on other machines.</p>
+<p>But this also has benefits since packages like Revise, Test, BenchmarkTools etc.
+can be installed in the default environment rather than cluttering a project
+environment.</p>
+</div>
+</div>
+<div class="section" id="creating-environments-for-other-projects">
+<h3>Creating environments for other projects<a class="headerlink" href="#creating-environments-for-other-projects" title="Permalink to this headline"></a></h3>
+<p>To create a new environment based on another project you only need a
+<cite>Project.toml</cite> or <cite>Manifest.toml</cite> file.</p>
+<ul class="simple">
+<li><p>Using <cite>Project.toml</cite> will install the required dependencies but not
+necessarily with the same package versions.</p></li>
+<li><p>Using <cite>Manifest.toml</cite> will install the packages in the <strong>same state</strong> that
+is given by the manifest file.</p></li>
+</ul>
+<p>For example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># first git clone the project (or similar) and enter the package directory</span>
+
+<span class="c"># activate the environment</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+
+<span class="c"># install packages from Manifest.toml or Project.toml</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">instantiate</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="creating-a-new-project">
+<h2>Creating a new project<a class="headerlink" href="#creating-a-new-project" title="Permalink to this headline"></a></h2>
+<p>We also use the package manager to start a new project, i.e. when we
+want to develop a new package.</p>
+<div class="admonition-create-a-project type-along important admonition" id="type-along-5">
+<p class="admonition-title">Create a project</p>
+<p>First we navigate to where we want to create the package, and then:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="s">&quot;MyPackage&quot;</span><span class="p">)</span>
+<span class="n">cd</span><span class="p">(</span><span class="s">&quot;MyPackage&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pkg.generate</span></code> creates both a Project.toml file which has package metadata and
+is where our dependencies will go, and a basic src/MyPackage.jl template.
+Inspect both!</p>
+<p>Now we activate the environment and add dependencies:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now use anything from the Example package in our new project:</p>
+<p>Let’s import the Example package and add a function to the MyPackage module:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">MyPackage</span>
+
+<span class="k">using</span> <span class="n">Example</span>
+<span class="k">export</span> <span class="n">greet</span><span class="p">,</span> <span class="n">x</span>
+
+<span class="n">greet</span><span class="p">()</span> <span class="o">=</span> <span class="n">print</span><span class="p">(</span><span class="s">&quot;Hello World!&quot;</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">domath</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">end</span> <span class="c"># module</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Test</span></code> package provides unit testing functionality.
+We can have a look at the Example package again:
+<a class="reference external" href="https://github.com/JuliaLang/Example.jl">https://github.com/JuliaLang/Example.jl</a></p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">test/</span></code> subdirectory we find a script called (following convention)
+<code class="docutils literal notranslate"><span class="pre">runtests.jl</span></code>:</p>
+<div class="highlight-Julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Test</span><span class="p">,</span> <span class="n">Example</span>
+
+<span class="nd">@test</span> <span class="n">hello</span><span class="p">(</span><span class="s">&quot;Julia&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;Hello, Julia&quot;</span>
+<span class="nd">@test</span> <span class="n">domath</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">≈</span> <span class="mf">7.0</span>
+</pre></div>
+</div>
+<p>Running these tests can either be done from inside the package manager:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span><span class="p">(</span><span class="s">&quot;MyPackage&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or from the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>julia --project<span class="o">=</span>. test/runtests.jl
+</pre></div>
+</div>
+<p>Usually, one needs to perform more than one test per function or module,
+and usually this is done by collecting related tests in a <code class="docutils literal notranslate"><span class="pre">&#64;testset</span></code>
+block:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@testset</span> <span class="s">&quot;Testing domath&quot;</span> <span class="k">begin</span>
+   <span class="nd">@test</span> <span class="n">domath</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">≈</span> <span class="mf">7.0</span>
+   <span class="nd">@test</span> <span class="n">domath</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">≈</span> <span class="mi">7</span>
+   <span class="nd">@test</span> <span class="n">domath</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="mi">2</span><span class="nb">im</span><span class="p">)</span> <span class="o">≈</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">2</span><span class="nb">im</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;test_throws</span></code> macro can be used to make sure that an expected error
+is raised:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@test_throws</span> <span class="kt">MethodError</span> <span class="n">domath</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;test</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;test_throws</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;testset</span></code> macros are highly useful and can be
+sufficient for many projects, but large projects sometimes need more advanced
+functionality. This is provided in <a class="reference external" href="https://github.com/JuliaTesting/ReTest.jl">ReTest</a>
+and other packages in the <a class="reference external" href="https://github.com/JuliaTesting">JuliaTesting organization</a>.</p>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<div class="admonition-creating-a-new-environment exercise important admonition" id="exercise-0">
+<span id="datascience-env"></span><p class="admonition-title">Creating a new environment</p>
+<p>In preparation for the next section on data science techniques in Julia,
+create a new environment named <cite>datascience</cite> in a new directory,
+activate it and install the following packages:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/JuliaData/DataFrames.jl">DataFrames</a></p></li>
+<li><p><a class="reference external" href="https://github.com/devmotion/PalmerPenguins.jl">PalmerPenguins</a></p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPlots/Plots.jl">Plots</a></p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPlots/StatsPlots.jl">StatsPlots</a></p></li>
+<li><p><a class="reference external" href="https://github.com/FluxML/Flux.jl">Flux</a></p></li>
+<li><p><a class="reference external" href="https://alan-turing-institute.github.io/MLJ.jl/dev/">MLJ</a></p></li>
+</ul>
+<p><strong>Suggestion</strong>: run this in a new VSCode window (<em>File</em> &gt; <em>New Window</em>)
+because it will take some time and you can then continue working in your first window.</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Solution</p>
+<p>First create a new directory in a preferred location:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span><span class="p">(</span><span class="s">&quot;datascience&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then add the packages:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># navigate to the datascience directory</span>
+<span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="s">&quot;DataFrames&quot;</span><span class="p">,</span> <span class="s">&quot;PalmerPenguins&quot;</span><span class="p">,</span> <span class="s">&quot;Plots&quot;</span><span class="p">,</span> <span class="s">&quot;StatsPlots&quot;</span><span class="p">,</span> <span class="s">&quot;Flux&quot;</span><span class="p">,</span> <span class="s">&quot;MLJ&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-create-a-package-out-of-the-points-module exercise important admonition" id="exercise-1">
+<p class="admonition-title">Create a package out of the Points module</p>
+<p>Make the Points module we created above into a Julia package!</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">Solution</p>
+<p>Navigate to a suitable directory, and then:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="s">&quot;Points&quot;</span><span class="p">)</span>
+<span class="n">cd</span><span class="p">(</span><span class="s">&quot;Points&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then edit the <code class="docutils literal notranslate"><span class="pre">Points.jl</span></code> file under <code class="docutils literal notranslate"><span class="pre">src/</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">Points</span>
+
+<span class="k">export</span> <span class="n">Point</span><span class="p">,</span> <span class="n">sumsquare</span>
+
+<span class="k">struct</span> <span class="kt">Point</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span>
+    <span class="n">x</span><span class="o">::</span><span class="kt">T</span>
+    <span class="n">y</span><span class="o">::</span><span class="kt">T</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">p1</span><span class="o">::</span><span class="kt">Point</span><span class="p">,</span> <span class="n">p2</span><span class="o">::</span><span class="kt">Point</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>To start using it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+<span class="k">using</span> <span class="n">Points</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-write-a-test exercise important admonition" id="exercise-2">
+<p class="admonition-title">Write a test</p>
+<p>Write a few tests for the <code class="docutils literal notranslate"><span class="pre">sumsquare</span></code> function in the <cite>Points</cite> package you
+created in the previous exercise. Run the tests and see if they pass!</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-2">
+<p class="admonition-title">Solution</p>
+<p>Create a file <code class="docutils literal notranslate"><span class="pre">runtests.jl</span></code> under <code class="docutils literal notranslate"><span class="pre">test/</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Test</span>
+<span class="k">using</span> <span class="n">Points</span>
+
+<span class="nd">@testset</span> <span class="k">begin</span>
+    <span class="c"># test floats</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+    <span class="nd">@test</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span> <span class="o">==</span> <span class="n">Point</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">)</span>
+    <span class="c"># test integers</span>
+    <span class="n">q1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="nd">@test</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">)</span> <span class="o">==</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+    <span class="c"># test that strings fail</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="s">&quot;d&quot;</span><span class="p">)</span>
+    <span class="nd">@test_throws</span> <span class="kt">MethodError</span> <span class="n">sumsquare</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Run the tests with:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s">&quot;Points&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Tutorial on a <a class="reference external" href="https://techytok.com/lesson-workflow/">Julia coding workflow in VSCode</a></p></li>
+<li><p>Documentation for <a class="reference external" href="https://www.julia-vscode.org/docs/stable/">Julia in VSCode</a></p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaTesting">JuliaTesting organization</a>.</p></li>
+<li><p><a class="reference external" href="https://pkgdocs.julialang.org/v1/">Pkg documentation</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../overview/" class="btn btn-neutral float-left" title="Special features of Julia" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../scientific-computing/" class="btn btn-neutral float-right" title="Scientific computing and data science" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

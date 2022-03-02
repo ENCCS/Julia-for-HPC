@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing performant Julia code &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Parallelization" href="../parallelization/" />
+    <link rel="prev" title="Scientific computing and data science" href="../scientific-computing/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Julia primer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Developing in Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-computing/">Scientific computing and data science</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing performant Julia code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introducing-heatequation-jl">Introducing HeatEquation.jl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benchmarking">Benchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-options">Optimization options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#column-major-vs-row-major-order">Column-major vs row-major order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inbounds">&#64;inbounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#staticarrays">StaticArrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-performance-considerations">Other performance considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU/">GPU programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Writing performant Julia code</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/performant-code.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="writing-performant-julia-code">
+<h1>Writing performant Julia code<a class="headerlink" href="#writing-performant-julia-code" title="Permalink to this headline"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>How should performance be measured?</p></li>
+<li><p>How can I profile my Julia code?</p></li>
+<li><p>Are there any performance pitfalls in Julia?</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching</p></li>
+<li><p>10 min exercises</p></li>
+</ul>
+</div>
+<div class="section" id="introducing-heatequation-jl">
+<h2>Introducing HeatEquation.jl<a class="headerlink" href="#introducing-heatequation-jl" title="Permalink to this headline"></a></h2>
+<p>We will need a realistic Julia package to work on from now on.
+For this purpose we will use a minimal heat equation solver, inspired by
+<a class="reference external" href="https://github.com/cschpc/heat-equation">this educational repository containing C/C++/Fortran versions with different
+parallelization strategies</a> (credits to
+CSC Finland). The Julia version of this package can be found at
+<a class="reference external" href="https://github.com/enccs/HeatEquation.jl">https://github.com/enccs/HeatEquation.jl</a> but the source files are also displayed
+below.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">HeatEquation.jl</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">setup.jl</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">io.jl</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">core.jl</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">Project.toml</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">HeatEquation</span>
+
+<span class="k">using</span> <span class="n">ProgressMeter</span>
+<span class="k">using</span> <span class="n">Plots</span>
+
+<span class="n">include</span><span class="p">(</span><span class="s">&quot;setup.jl&quot;</span><span class="p">)</span>
+<span class="n">include</span><span class="p">(</span><span class="s">&quot;io.jl&quot;</span><span class="p">)</span>
+<span class="n">include</span><span class="p">(</span><span class="s">&quot;core.jl&quot;</span><span class="p">)</span>
+
+<span class="k">export</span> <span class="n">Field</span><span class="p">,</span> <span class="n">simulate!</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">visualize</span><span class="p">,</span> <span class="n">average_temperature</span>
+
+<span class="k">end</span> <span class="c"># module</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    Field(nx::Int64, ny::Int64, dx::Float64, dy::Float64, data::Matrix{Float64})</span>
+
+<span class="s">Temperature field type. nx and ny are the dimensions of the field. </span>
+<span class="s">The array data contains also ghost layers, so it will have dimensions </span>
+<span class="s">[nx+2, ny+2]</span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="k">mutable struct</span> <span class="kt">Field</span><span class="p">{</span><span class="kt">T</span><span class="o">&lt;:</span><span class="kt">AbstractArray</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">::</span><span class="kt">Int64</span>
+    <span class="n">ny</span><span class="o">::</span><span class="kt">Int64</span>
+    <span class="c"># Size of the grid cells</span>
+    <span class="n">dx</span><span class="o">::</span><span class="kt">Float64</span>
+    <span class="n">dy</span><span class="o">::</span><span class="kt">Float64</span>
+    <span class="c"># The temperature values in the 2D grid</span>
+    <span class="n">data</span><span class="o">::</span><span class="kt">T</span>
+<span class="k">end</span>
+
+<span class="c"># outer constructor with default cell sizes and initialized data</span>
+<span class="n">Field</span><span class="p">(</span><span class="n">nx</span><span class="o">::</span><span class="kt">Int64</span><span class="p">,</span> <span class="n">ny</span><span class="o">::</span><span class="kt">Int64</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="kt">Field</span><span class="p">{</span><span class="kt">typeof</span><span class="p">(</span><span class="kt">data</span><span class="p">)}(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+<span class="c"># extend deepcopy to new type</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">f</span><span class="o">::</span><span class="kt">Field</span><span class="p">)</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+<span class="s">    initialize(rows::Int, cols::Int)</span>
+
+<span class="s">Initialize two temperature field with (nrows, ncols) number of </span>
+<span class="s">rows and columns.</span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="k">function</span> <span class="n">initialize</span><span class="p">(</span><span class="n">nrows</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">arraytype</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">arraytype</span><span class="p">(</span><span class="n">zeros</span><span class="p">(</span><span class="n">nrows</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="c"># generate a specific field with boundary conditions</span>
+    <span class="n">generate_field!</span><span class="p">(</span><span class="n">previous</span><span class="p">)</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="n">Base</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">previous</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">previous</span><span class="p">,</span> <span class="n">current</span>
+<span class="k">end</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+<span class="s">    generate_field!(field0::Field)</span>
+
+<span class="s">Generate a temperature field.  Pattern is disc with a radius</span>
+<span class="s">of nx / 6 in the center of the grid. Boundary conditions are </span>
+<span class="s">(different) constant temperatures outside the grid.</span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="k">function</span> <span class="n">generate_field!</span><span class="p">(</span><span class="n">field</span><span class="o">::</span><span class="kt">Field</span><span class="p">)</span>
+    <span class="c"># Square of the disk radius</span>
+    <span class="n">radius2</span> <span class="o">=</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">nx</span> <span class="o">/</span> <span class="mf">6.0</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">field</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">field</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">2</span>
+            <span class="n">ds2</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">field</span><span class="o">.</span><span class="n">nx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">field</span><span class="o">.</span><span class="n">ny</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">ds2</span> <span class="o">&lt;</span> <span class="n">radius2</span> 
+                <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0</span>
+            <span class="k">else</span>
+                <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">65.0</span>
+            <span class="k">end</span>
+        <span class="k">end</span> 
+    <span class="k">end</span> 
+
+    <span class="c"># Boundary conditions</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">.=</span> <span class="mf">20.0</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">field</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">.=</span> <span class="mf">70.0</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">]</span> <span class="o">.=</span> <span class="mf">85.0</span>
+    <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">]</span> <span class="o">.=</span> <span class="mf">5.0</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    visualize(curr::Field, filename=:none)</span>
+
+<span class="s">Create a heatmap of a temperature field. Optionally write png file. </span>
+<span class="s">&quot;&quot;&quot;</span>    
+<span class="k">function</span> <span class="n">visualize</span><span class="p">(</span><span class="n">curr</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="ss">:none</span><span class="p">)</span>
+    <span class="n">background_color</span> <span class="o">=</span> <span class="ss">:white</span>
+
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">heatmap</span><span class="p">(</span>
+        <span class="n">curr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">colorbar_title</span> <span class="o">=</span> <span class="s">&quot;Temperature (C)&quot;</span><span class="p">,</span>
+        <span class="n">background_color</span> <span class="o">=</span> <span class="n">background_color</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="ss">:none</span>
+        <span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    evolve!(curr::Field, prev::Field, a, dt)</span>
+
+<span class="s">Calculate a new temperature field curr based on the previous </span>
+<span class="s">field prev. a is the diffusion constant and dt is the largest </span>
+<span class="s">stable time step.    </span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="k">function</span> <span class="n">evolve!</span><span class="p">(</span><span class="n">curr</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">prev</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">xderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span>
+            <span class="n">yderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span>
+            <span class="n">curr</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">xderiv</span> <span class="o">+</span> <span class="n">yderiv</span><span class="p">)</span>
+        <span class="k">end</span> 
+    <span class="k">end</span>
+<span class="k">end</span>
+
+
+
+<span class="s">&quot;&quot;&quot;</span>
+<span class="s">    swap_fields!(curr::Field, prev::Field)</span>
+
+<span class="s">Swap the data of two fields curr and prev.    </span>
+<span class="s">&quot;&quot;&quot;</span>    
+<span class="k">function</span> <span class="n">swap_fields!</span><span class="p">(</span><span class="n">curr</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">prev</span><span class="o">::</span><span class="kt">Field</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">curr</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">prev</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">tmp</span>
+<span class="k">end</span>
+
+<span class="s">&quot;&quot;&quot; </span>
+<span class="s">    average_temperature(f::Field)</span>
+
+<span class="s">Calculate average temperature of a temperature field.        </span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="n">average_temperature</span><span class="p">(</span><span class="n">f</span><span class="o">::</span><span class="kt">Field</span><span class="p">)</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="n">f</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="n">f</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">nx</span> <span class="o">*</span> <span class="n">f</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+<span class="s">    simulate!(current, previous, nsteps)</span>
+
+<span class="s">Run the heat equation solver on fields curr and prev for nsteps.</span>
+<span class="s">&quot;&quot;&quot;</span>
+<span class="k">function</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">prev</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Initial average temperature: </span><span class="si">$</span><span class="p">(</span><span class="n">average_temperature</span><span class="p">(</span><span class="n">curr</span><span class="p">))</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="c"># Diffusion constant</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="c"># Largest stable time step</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">*</span> <span class="n">curr</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">curr</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">curr</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span>
+    
+    <span class="c"># display a nice progress bar</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">nsteps</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">nsteps</span>
+        <span class="c"># calculate new state based on previous state</span>
+        <span class="n">evolve!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="c"># swap current and previous fields</span>
+        <span class="n">swap_fields!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">)</span>
+
+        <span class="c"># increment the progress bar</span>
+        <span class="n">next!</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">end</span> 
+
+    <span class="c"># print final average temperature</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Final average temperature: </span><span class="si">$</span><span class="p">(</span><span class="n">average_temperature</span><span class="p">(</span><span class="n">curr</span><span class="p">))</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-4" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-4" name="0-4" role="tabpanel" tabindex="0"><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;HeatEquation&quot;</span>
+<span class="n">uuid</span> <span class="o">=</span> <span class="s">&quot;47ed4b48-c1b8-4a04-a284-f84c9c1f202e&quot;</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Kjartan Thor Wikfeldt &lt;ktwikfeldt@gmail.com&gt;&quot;</span><span class="p">]</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s">&quot;0.1.0&quot;</span>
+
+<span class="p">[</span><span class="n">deps</span><span class="p">]</span>
+<span class="n">CUDA</span> <span class="o">=</span> <span class="s">&quot;052768ef-5323-5732-b1bb-66c8b64840ba&quot;</span>
+<span class="n">Distributed</span> <span class="o">=</span> <span class="s">&quot;8ba89e20-285c-5b6f-9357-94700520ee1b&quot;</span>
+<span class="n">Plots</span> <span class="o">=</span> <span class="s">&quot;91a5bcdd-55d7-5caf-9e0b-520d859cae80&quot;</span>
+<span class="n">ProgressMeter</span> <span class="o">=</span> <span class="s">&quot;92933f4c-e287-5a05-a399-4b506db050ca&quot;</span>
+<span class="n">SharedArrays</span> <span class="o">=</span> <span class="s">&quot;1a1011a3-84de-559e-8e89-a11a2f7dc383&quot;</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="section" id="benchmarking">
+<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Permalink to this headline"></a></h2>
+<p>Base Julia already has the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> macro to print the time it takes to
+execute an expression. However, to get more accurate values it is better to
+rely on the <a class="reference external" href="https://juliaci.github.io/BenchmarkTools.jl/dev/manual/">BenchmarkTools.jl</a>
+framework, which provides convenient macros to perform benchmarking:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;btime</span></code>: for quick sanity checks, prints the time an expression takes and the memory allocated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;benchmark</span></code>: runs a fuller benchmark on a given expression.</p></li>
+</ul>
+<p>As with <cite>Revise.jl</cite> and <cite>Test.jl</cite>, <cite>BenchmarkTools.jl</cite> should be installed in the base environment:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;BenchmarkTools&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let us all try it out on the HeatEquation package in the REPL.
+We could use the <code class="docutils literal notranslate"><span class="pre">Pkg.develop()</span></code> function to clone the repository
+into our <cite>~/.julia/dev</cite> folder, which is a good way to work on existing
+Julia packages. Here, we instead imagine that we wrote this package and it
+exists on our computer, so we start by cloning the repository (or download and
+unpack a zip archive) to a new folder:</p>
+<div class="admonition-benchmarking type-along important admonition" id="type-along-0">
+<p class="admonition-title">Benchmarking</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="nv">$HOME</span>/julia
+git clone https://github.com/enccs/HeatEquation.jl
+<span class="nb">cd</span> HeatEquation
+</pre></div>
+</div>
+<p>If you don’t have Git installed, you can also
+<a class="reference external" href="https://github.com/ENCCS/HeatEquation.jl/archive/refs/heads/main.zip">download a zipfile</a>.
+Next open a new VSCode window and navigate to the new directory.
+Open up a Julia REPL and activate the <cite>HeatEquation</cite> environment.</p>
+<p>When everything has been set up, we can import <cite>HeatEquation</cite> and begin by
+testing the package:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">HeatEquation</span>
+<span class="k">using</span> <span class="n">BenchmarkTools</span>
+
+<span class="n">ncols</span><span class="p">,</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">nsteps</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">500</span>
+<span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span> <span class="n">nrows</span><span class="p">)</span>
+<span class="n">visualize</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+
+<span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+
+<span class="n">visualize</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To perform benchmarking on the <code class="docutils literal notranslate"><span class="pre">simulate!</span></code> function, simply insert <code class="docutils literal notranslate"><span class="pre">&#64;benchmark</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@benchmark</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also capture the output of <code class="docutils literal notranslate"><span class="pre">&#64;benchmark</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">bench_results</span> <span class="o">=</span> <span class="nd">@benchmark</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+<span class="n">typeof</span><span class="p">(</span><span class="n">bench_results</span><span class="p">)</span>
+<span class="n">println</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">bench_results</span><span class="o">.</span><span class="n">times</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://docs.julialang.org/en/v1/manual/profile/">Profile module</a>, part of <code class="docutils literal notranslate"><span class="pre">Base</span></code>,
+provides tools to help improve
+the performance of Julia code. It relies on <cite>sampling</cite> code at runtime
+and thus gathering statistical information on where time is spent.
+Profiling is particularly useful for identifying bottlenecks in code -
+we should remember that “premature optimization is the root of all evil” (Donald Knuth).</p>
+<p>Let’s go ahead and profile the <cite>HeatEquation</cite> code:</p>
+<div class="admonition-profiling type-along important admonition" id="type-along-1">
+<p class="admonition-title">Profiling</p>
+<p>This is how we can profile the <code class="docutils literal notranslate"><span class="pre">simulate!</span></code> function and
+print its results in a tree structure:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Profile</span>
+
+<span class="n">Profile</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c"># clear backtraces from earlier runs</span>
+<span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="nd">@profile</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The information shown is not that easily digestible. Fortunately, the Julia extension
+for VSCode includes a <code class="docutils literal notranslate"><span class="pre">&#64;profview</span></code> macro which provides a clearer graphical view:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@profview</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also look at the same information in a flamegraph by clicking the little fire
+button next to the search area.
+We should now be able to conclude that <code class="docutils literal notranslate"><span class="pre">setindex!</span></code> and <code class="docutils literal notranslate"><span class="pre">getindex</span></code> functions
+inside <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> take most of the time.</p>
+</div>
+<p>Several packages are available for more advanced visualization of profiling results:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/timholy/ProfileView.jl">ProfileView.jl</a> is a stand-alone visualizer
+based on GTK.</p></li>
+<li><p><a class="reference external" href="https://github.com/davidanthoff/ProfileVega.jl">ProfileVega.jl</a>
+uses VegaLight and integrates well with Jupyter notebooks.</p></li>
+<li><p><a class="reference external" href="https://github.com/tkluck/StatProfilerHTML.jl">StatProfilerHTML.jl</a>
+produces HTML and presents some additional summaries,
+and also integrates well with Jupyter notebooks.</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPerf/PProf.jl">PProf.jl</a> an interactive, web-based profile
+GUI explorer, implemented as a wrapper around google/pprof.</p></li>
+</ul>
+</div>
+<div class="section" id="optimization-options">
+<h2>Optimization options<a class="headerlink" href="#optimization-options" title="Permalink to this headline"></a></h2>
+<div class="section" id="column-major-vs-row-major-order">
+<h3>Column-major vs row-major order<a class="headerlink" href="#column-major-vs-row-major-order" title="Permalink to this headline"></a></h3>
+<p>Multidimensional arrays in Julia are stored in column-major order, i.e.
+arrays are stacked one column at a time in memory. This is the same order
+as in Fortran, Matlab and R, but opposite to that of C/C++ and Python (numpy).
+To avoid cache-misses it is  crucial to order one’s loops such that memory is
+accessed in a contiguous way!</p>
+<p>We can verify this by swapping the loop order in the <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> function and
+measure the performance:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">evolve!</span><span class="p">(</span><span class="n">curr</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">prev</span><span class="o">::</span><span class="kt">Field</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">xderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span>
+            <span class="n">yderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span>
+            <span class="n">curr</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">xderiv</span> <span class="o">+</span> <span class="n">yderiv</span><span class="p">)</span>
+      <span class="k">end</span>
+   <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="nd">@benchmark</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In a set of tests this more than doubled the execution time!</p>
+</div>
+<div class="section" id="inbounds">
+<h3>&#64;inbounds<a class="headerlink" href="#inbounds" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;inbounds</span></code> macro eliminates array bounds checking within expressions which
+can save considerable time. This should only be used if you are sure that no out-of-bounds
+indices are used!</p>
+<p>Let us add <code class="docutils literal notranslate"><span class="pre">&#64;inbounds</span></code> to the three lines in the inner loop in <code class="docutils literal notranslate"><span class="pre">evolve!</span></code>
+and benchmark it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">curr</span><span class="o">.</span><span class="n">nx</span><span class="o">+</span><span class="mi">1</span>
+        <span class="nd">@inbounds</span> <span class="n">xderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span>
+        <span class="nd">@inbounds</span> <span class="n">yderiv</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">curr</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span>
+        <span class="nd">@inbounds</span> <span class="n">curr</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="n">xderiv</span> <span class="o">+</span> <span class="n">yderiv</span><span class="p">)</span>
+    <span class="k">end</span>
+ <span class="k">end</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="nd">@benchmark</span> <span class="n">simulate!</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Significant speedup should be seen! In a set of tests the execution time as
+well as memory consumption were reduced by 50%.</p>
+</div>
+<div class="section" id="staticarrays">
+<h3>StaticArrays<a class="headerlink" href="#staticarrays" title="Permalink to this headline"></a></h3>
+<p>For applications involving <em>many small arrays</em>, significant performance can
+be gained by using <a class="reference external" href="https://github.com/JuliaArrays/StaticArrays.jl">StaticArrays</a>
+instead of normal Arrays. The package provides a range of built-in <code class="docutils literal notranslate"><span class="pre">StaticArray</span></code>
+types, including mutable and immutable arrays, with a <em>static size known at
+compile time</em>.</p>
+<p>Example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">m1</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="nd">@SArray</span> <span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="nd">@btime</span> <span class="n">m1</span><span class="o">*</span><span class="n">m1</span>
+<span class="c"># 311.808 ns (1 allocation: 896 bytes)</span>
+
+<span class="nd">@btime</span> <span class="n">m2</span><span class="o">*</span><span class="n">m2</span>
+<span class="c"># 99.902 ns (1 allocation: 816 bytes)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">StaticArrays</span></code> provide
+<a class="reference external" href="https://juliaarrays.github.io/StaticArrays.jl/stable/pages/quickstart/">many additional features</a>,
+but unfortunately they can only be used for vectors, matrices and arrays with up
+to around 100 elements.</p>
+</div>
+<div class="section" id="other-performance-considerations">
+<h3>Other performance considerations<a class="headerlink" href="#other-performance-considerations" title="Permalink to this headline"></a></h3>
+<p>Julia’s official documentation has an important page on
+<a class="reference external" href="https://docs.julialang.org/en/v1/manual/performance-tips/">Performance tips</a>.
+Before embarking on any research software project in Julia you
+should carefully read this page!</p>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<div class="admonition-eliminates-array-bounds-checking exercise important admonition" id="exercise-0">
+<p class="admonition-title">Eliminates array bounds checking</p>
+<p>Insert the <code class="docutils literal notranslate"><span class="pre">&#64;inbounds</span></code> macro in the <code class="docutils literal notranslate"><span class="pre">evolve!</span></code> function and
+benchmark it. How large is the speedup?</p>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.julialang.org/en/v1/manual/performance-tips/">https://docs.julialang.org/en/v1/manual/performance-tips/</a></p></li>
+</ul>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Always benchmark and profile before optimizing!</p></li>
+<li><p>Optimize bottlenecks in your serial code before you parallelize!</p></li>
+<li><p><a class="reference external" href="https://docs.julialang.org/en/v1/manual/performance-tips/">There’s a lot to think about</a>.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../scientific-computing/" class="btn btn-neutral float-left" title="Scientific computing and data science" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../parallelization/" class="btn btn-neutral float-right" title="Parallelization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

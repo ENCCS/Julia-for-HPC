@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Julia primer &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Motivation" href="../motivation/" />
+    <link rel="prev" title="Julia for high-performance scientific computing" href="../" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Julia primer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-julia">Running Julia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loops-and-conditionals">Loops and conditionals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-files">Working with files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exception-handling">Exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#macros">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scope">Scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-conventions">Style conventions</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Developing in Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-computing/">Scientific computing and data science</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performant-code/">Writing performant Julia code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU/">GPU programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Julia primer</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/prerequisites.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="julia-primer">
+<h1>Julia primer<a class="headerlink" href="#julia-primer" title="Permalink to this headline"></a></h1>
+<p>This episodes provides a condensed overview of Julia’s main syntax and features.</p>
+<div class="admonition-preparing-for-a-workshop callout admonition" id="callout-0">
+<p class="admonition-title">Preparing for a workshop</p>
+<p>To prepare for a workshop where this material is taught, please
+first install Julia as described in <a class="reference internal" href="../setup/"><span class="doc">Setup</span></a>, and then go through
+the overview below and experiment with it either in the Julia REPL,
+a Jupyter or Pluto notebook, or in VSCode (refer to <a class="reference internal" href="../setup/"><span class="doc">Setup</span></a> for
+installation and configuration instructions).</p>
+</div>
+<p>As an alternative to going through this page, you can also watch
+<a class="reference external" href="https://www.youtube.com/watch?v=sE67bP2PnOo&amp;t=28s">this video</a>
+which covers “a 300 page book on Julia in one hour”.</p>
+<p>If you are coming from MATLAB, R, Python, C/C++ or Common Lisp,
+you should also have a look at <a class="reference external" href="https://docs.julialang.org/en/v1/manual/noteworthy-differences/">this page</a>
+which lists the respective differences in Julia.</p>
+<div class="section" id="running-julia">
+<h2>Running Julia<a class="headerlink" href="#running-julia" title="Permalink to this headline"></a></h2>
+<p>We can write Julia code in various ways:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://docs.julialang.org/en/v1/stdlib/REPL/">REPL</a>
+(read-evaluate-print-loop). Start it by typing <code class="docutils literal notranslate"><span class="pre">julia</span></code> (or
+the full path of your Julia executable) on your command line.
+The REPL has four modes:</p>
+<ul class="simple">
+<li><p><strong>Julian mode</strong> - default mode where prompt starts with <code class="docutils literal notranslate"><span class="pre">julia&gt;</span></code>.
+Here you enter Julia expressions and see output.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">?</span></code> to go to <strong>Help mode</strong> where prompt starts with <code class="docutils literal notranslate"><span class="pre">help?&gt;</span></code>.
+Julia will print help/documentation on anything you enter.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">;</span></code> to go to <strong>Shell mode</strong> where prompt starts with
+<code class="docutils literal notranslate"><span class="pre">shell&gt;</span></code>. You can type any shell commands as you would from terminal.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">]</span></code> to go to <strong>Package mode</strong> where prompt starts with
+<code class="docutils literal notranslate"><span class="pre">(&#64;v1.5)</span> <span class="pre">pkg&gt;</span></code> (if you have Julia version 1.5). Here you can add
+packages with <code class="docutils literal notranslate"><span class="pre">add</span></code>, update packages with <code class="docutils literal notranslate"><span class="pre">update</span></code> etc. To see
+all options type <code class="docutils literal notranslate"><span class="pre">?</span></code>.</p></li>
+<li><p>To exit any non-Julian mode, hit Backspace key.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://jupyter.org/">Jupyter</a>:
+Jupyter notebooks are familiar to many Python and R users.</p></li>
+<li><p><a class="reference external" href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a>:
+Pluto offers a similar notebook experience to Jupyter, but in contrast
+to Jupyter
+Pluto understands global references between cells, and
+reactively re-evaluates cells affected by a code change.</p></li>
+<li><p><a class="reference external" href="https://code.visualstudio.com/">Visual Studio Code</a> (VSCode):</p>
+<ul class="simple">
+<li><p>a full-fledged Integrated Development Environment which is
+very useful for larger codebases. Extensions are needed to
+activate Julia inside VSCode, see the <a class="reference external" href="https://code.visualstudio.com/docs/languages/julia">official documentation
+for instructions</a>.</p></li>
+</ul>
+</li>
+<li><p>A text editor like nano, emacs, vim, etc., followed by running your
+code with <code class="docutils literal notranslate"><span class="pre">julia</span> <span class="pre">filename.jl</span></code>.</p></li>
+</ol>
+</div>
+<div class="section" id="basic-syntax">
+<h2>Basic syntax<a class="headerlink" href="#basic-syntax" title="Permalink to this headline"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Example syntax and its result/meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Arithmetic</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">+</span> <span class="pre">3</span> <span class="pre">*</span> <span class="pre">1.1</span></code>                   Summing, multiplying</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2^3</span></code>                           Power</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sqrt(9)</span></code>                       Square root</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">40</span> <span class="pre">/</span> <span class="pre">5</span></code>                        <code class="docutils literal notranslate"><span class="pre">8.0</span></code> (Float)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">%</span> <span class="pre">2</span></code>                        <code class="docutils literal notranslate"><span class="pre">2</span></code> (remainder)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">10^19</span></code>                         Results in integer overflow!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1e19</span></code> or <code class="docutils literal notranslate"><span class="pre">big(10)^19</span></code>        -&gt; solves the problem</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp(pi*im)</span></code>                    Exponentiation, imaginary nr.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sin(2*pi)</span></code>                     Trigonometry</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Types</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">3.14</span></code>                      Scalar, float</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">=</span> <span class="pre">10</span></code>                        Scalar, integer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">&quot;hello&quot;</span></code>                   String</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">true</span></code>                      Boolean</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typeof(A)</span></code>                     Find type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">supertype(Integer)</span></code>            Find supertypes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subtype(Integer)</span></code>              Find subtypes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Integer</span> <span class="pre">&lt;:</span> <span class="pre">Real</span></code>               “Subtype of”, returns True</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">struct</span></code>                        Immutable composite type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mutable</span> <span class="pre">struct</span></code>                Mutable composite type</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Special values</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Inf</span></code>                           Infinity (e.g. <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Nan</span></code>                           Not a number (e.g. <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">/</span> <span class="pre">0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nothing</span></code>                       e.g. for variables w/o value</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>1D arrays</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2,</span> <span class="pre">3)</span></code>                 Tuple (immutable)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">(a=2,</span> <span class="pre">b=1+2)</span></code>              Named tuple, access: <code class="docutils literal notranslate"><span class="pre">t.a</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">Dict(&quot;A&quot;=&gt;1,</span> <span class="pre">&quot;B&quot;=&gt;2)</span></code>      Dictionary</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4]</span></code>              4-element Vector{Int64}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vector{T}(undef,</span> <span class="pre">n)</span></code>           undef 1-D array length n</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Float64[1,2]</span></code>                  2-element Vector{Float64}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[1:5;]</span></code>                        5-element Array{Int64,1}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[1:5]</span></code>                         1-element vector with a range</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[range(0,stop=2π,length=5);]</span></code>  5-element Vector{Float64}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">collect(T,</span> <span class="pre">itr)</span></code>               array from iterable</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rand(5)</span></code>                       random 5-elem vector in [0,1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rand(Int,</span> <span class="pre">5)</span></code>                  random vector with integers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ones(5)</span></code>                       5-elem vector with FP64 ones</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zeros(5)</span></code>                      5-elem vector with FP64 zeros</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[1,2,3].^2</span></code>                    Element-wise dot-operation</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Indexing and
+slicing</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a[1]</span></code>                          first element</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[1:3]</span></code>                        3-element vector</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[3:end]</span></code>                      <code class="docutils literal notranslate"><span class="pre">end</span></code> is last element</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[1:2:end]</span></code>                    step size of 2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[3:end]</span></code>                      <code class="docutils literal notranslate"><span class="pre">end</span></code> is last element</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splice!(a,2:3)</span></code>                Remove items at given indices</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splice!(a,2:3,</span> <span class="pre">5:7)</span></code>           Rm &amp; add items at given inds</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Multidimensional
+arrays</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Array{T}(undef,</span> <span class="pre">dims)</span></code>         New undef array type T</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mat</span> <span class="pre">=</span> <span class="pre">[1</span> <span class="pre">2;</span> <span class="pre">3</span> <span class="pre">4]</span></code>              2×2 Matrix{Int64}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zeros(4,4,4,4)</span></code>                Zero 4×4×4×4 Array{Float64,4}</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rand(12,4)</span></code>                    Random 12×4 Matrix{Float64}</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Inspecting
+array properties</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">length(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">first(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">last(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minimum(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">maximum(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">argmin(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">argmax(a)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size(a)</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Manipulating
+arrays</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">push!(a,</span> <span class="pre">10)</span></code>                  Append in-place</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insert!(a,</span> <span class="pre">1,</span> <span class="pre">42)</span></code>             Insert in given position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">append!(a,</span> <span class="pre">[3,</span> <span class="pre">5,</span> <span class="pre">7])</span></code>         Append another array</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splice!(a,</span> <span class="pre">3,</span> <span class="pre">-1])</span></code>            Rm in given pos and replace</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Miscellanous</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">δ</span> <span class="pre">=</span> <span class="pre">0.1</span></code>  (type <code class="docutils literal notranslate"><span class="pre">\delta</span></code> &lt;TAB&gt;)  Unicode names with LaTeX</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">println(&quot;A</span> <span class="pre">=</span> <span class="pre">$A&quot;)</span></code>            Print using interpolation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:something</span></code>                   Symbol for a name or label</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="loops-and-conditionals">
+<h2>Loops and conditionals<a class="headerlink" href="#loops-and-conditionals" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">for</span></code> loops iterate over iterables, including types like <code class="docutils literal notranslate"><span class="pre">Range</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Array</span></code>, <code class="docutils literal notranslate"><span class="pre">Set</span></code> and <code class="docutils literal notranslate"><span class="pre">Dict</span></code>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;i = </span><span class="si">$i</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">in</span> <span class="kt">Dict</span><span class="p">(</span><span class="s">&quot;A&quot;</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;B&quot;</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&quot;C&quot;</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$k</span><span class="s"> is </span><span class="si">$v</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">in</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="s">&quot;c&quot;</span><span class="p">))</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$i</span><span class="s"> </span><span class="si">$j</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Conditionals work like in other languages.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">5</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;x &gt; 5&quot;</span><span class="p">)</span>
+<span class="k">elseif</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">5</span>    <span class="c"># optional elseif</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;x &lt; 5&quot;</span><span class="p">)</span>
+<span class="k">else</span>            <span class="c"># optional else</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;x = 5&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The ternary operator exists in Julia:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">?</span> <span class="n">b</span> <span class="o">:</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>The meaning is <cite>[condition] ? [execute if true] : [execute if false]</cite>.</p>
+<p>While loops:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">10</span>
+    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="working-with-files">
+<h2>Working with files<a class="headerlink" href="#working-with-files" title="Permalink to this headline"></a></h2>
+<p>Obtain a file handle to start reading from file,
+and then close it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">)</span>
+<span class="c"># work with file...</span>
+<span class="n">close</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The recommended way to work with files is to use a
+do-block. At the end of the do-block the file will
+be closed automatically:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">open</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">f</span>
+    <span class="c"># read from file</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">readlines</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Writing to a file:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">open</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">f</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&quot;another line&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Some useful functions to work with files:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pwd()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">readdir(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mkdir(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">abspath(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">joinpath(p1,</span> <span class="pre">p2)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isdir(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splitdir(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">homedir()</span></code></p></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li><p>Show current directory</p></li>
+<li><p>Change directory</p></li>
+<li><p>Return list of current directory</p></li>
+<li><p>Create directory</p></li>
+<li><p>Add current dir to filename</p></li>
+<li><p>Join two paths</p></li>
+<li><p>Check if path is a directory</p></li>
+<li><p>Split path into tuple of dirname and filename</p></li>
+<li><p>Return home directory</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<p>A function is an object that maps a tuple of argument values to a return value.</p>
+<p>Example of a regular, named function:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>   <span class="c"># can also use &quot;return&quot; keyword</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>A more compact form:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</pre></div>
+</div>
+<p>This function can be called by <code class="docutils literal notranslate"><span class="pre">f(4,5)</span></code>.</p>
+<p>The expression <code class="docutils literal notranslate"><span class="pre">f</span></code> refers to the function object, and can be passed
+around like any other value (functions in Julia are <cite>first-class objects</cite>):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">f</span>
+<span class="n">g</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Functions can be combined by composition:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span>
+<span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>   <span class="c"># returns 3.0</span>
+</pre></div>
+</div>
+<p>An alternative syntax is to use ∘ (typed by <code class="docutils literal notranslate"><span class="pre">\circ&lt;tab&gt;</span></code>)</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">f</span> <span class="o">∘</span> <span class="n">g</span><span class="p">)(</span><span class="mi">3</span><span class="p">)</span>   <span class="c"># returns 3.0</span>
+</pre></div>
+</div>
+<p>Most operators (<code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code> etc) are in fact functions, and can be used as such:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>   <span class="c"># 6</span>
+
+<span class="c"># composition:</span>
+<span class="p">(</span><span class="n">sqrt</span> <span class="o">∘</span> <span class="o">+</span><span class="p">)(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  <span class="c"># 3.0 (first summation, then square root)</span>
+</pre></div>
+</div>
+<p>Just like Vectors and Arrays can be operated on element-wise (vectorized)
+by dot-operators (e.g. <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3].^2</span></code>), functions can also be vectorized
+(broadcasting):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">sin</span><span class="o">.</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Keyword arguments can be added after <code class="docutils literal notranslate"><span class="pre">;</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">greet_dog</span><span class="p">(;</span> <span class="n">greeting</span> <span class="o">=</span> <span class="s">&quot;Hi&quot;</span><span class="p">,</span> <span class="n">dog_name</span> <span class="o">=</span> <span class="s">&quot;Fido&quot;</span><span class="p">)</span>  <span class="c"># note the ;</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$greeting</span><span class="s"> </span><span class="si">$dog_name</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">greet_dog</span><span class="p">(</span><span class="n">dog_name</span> <span class="o">=</span> <span class="s">&quot;Coco&quot;</span><span class="p">,</span> <span class="n">greeting</span> <span class="o">=</span> <span class="s">&quot;Go fetch&quot;</span><span class="p">)</span>   <span class="c"># &quot;Go fetch Coco&quot;</span>
+</pre></div>
+</div>
+<p>Optional arguments are given default value:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">date</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="n">lpad</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">)</span>  <span class="c"># lpad pads from the left</span>
+    <span class="n">day</span> <span class="o">=</span> <span class="n">lpad</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$y</span><span class="s">-</span><span class="si">$month</span><span class="s">-</span><span class="si">$day</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>   <span class="c"># &quot;2021-01-01</span>
+<span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># &quot;2021-02-01</span>
+<span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>   <span class="c"># &quot;2021-02-03</span>
+</pre></div>
+</div>
+<p>Argument types can be specified explicitly:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="kt">Float64</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Return types can also be specified:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">::</span><span class="kt">Int8</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>Additional <strong>methods</strong> can be added to functions simply by
+new definitions with different argument types:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Int64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="kt">Int64</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>To find out which method is being dispatched for a particular
+function call:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@which</span> <span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As functions in Julia are first-class objects, they can be passed
+as arguments to other functions.
+<cite>Anonymous functions</cite> are useful for such constructs:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c"># passes each element of the vector to the anonymous function</span>
+</pre></div>
+</div>
+<p><cite>Varargs</cite> functions can take an arbitrary number of arguments:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">x</span><span class="o">...</span><span class="p">)</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>     <span class="c"># 6</span>
+<span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>   <span class="c"># 10</span>
+</pre></div>
+</div>
+<p>“Splatting” is when values contained in an iterable collection
+are split into individual arguments of a function call:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">x</span><span class="o">...</span><span class="p">)</span>    <span class="c"># 15</span>
+
+<span class="c"># also possible:</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="o">...</span><span class="p">)</span>    <span class="c"># 15</span>
+</pre></div>
+</div>
+<p>Julia functions can be piped (chained) together:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="o">:</span><span class="mi">10</span> <span class="o">|&gt;</span> <span class="n">sum</span> <span class="o">|&gt;</span> <span class="n">sqrt</span>    <span class="c"># 7.416198487095663 (first summed, then square root)</span>
+</pre></div>
+</div>
+<p>Inbuilt functions ending with <code class="docutils literal notranslate"><span class="pre">!</span></code> mutate their input variables, and this
+convention should be adhered to when writing own functions.
+Compare, for example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span><span class="p">;</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>   <span class="c"># gives 10</span>
+<span class="n">sum!</span><span class="p">([</span><span class="mi">1</span> <span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)</span>  <span class="c"># mutates A into 1x2 Matrix with elements 4, 6</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exception-handling">
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline"></a></h2>
+<p>Exceptions are thrown when an unexpected condition has occurred:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DomainError with -1.0:
+sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
+
+Stacktrace:
+  [1] throw_complex_domainerror(::Symbol, ::Float64) at ./math.jl:33
+  [2] sqrt at ./math.jl:573 [inlined]
+  [3] sqrt(::Int64) at ./math.jl:599
+  [4] top-level scope at In[130]:1
+  [5] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+</pre></div>
+</div>
+<p>Exceptions can be handled with a try/catch block:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">try</span>
+    <span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">catch</span> <span class="n">e</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;caught the error: </span><span class="si">$e</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>caught the error: DomainError(-1.0, &quot;sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).&quot;)
+</pre></div>
+</div>
+<p>Exceptions can be created explicitly with <cite>throw</cite>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">negexp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">&gt;=</span><span class="mi">0</span>
+        <span class="k">return</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span>
+    <span class="n">throw</span><span class="p">(</span><span class="kt">DomainError</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&quot;argument must be non-negative&quot;</span><span class="p">))</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://docs.julialang.org/en/v1/manual/metaprogramming/">metaprogramming support in Julia</a>
+allows code to be automatically transformed and generated. A full treatment of metaprogramming
+is outside the scope of this lesson but familiarity with macros is highly useful.
+Macros provide a mechanism to include generated code in the final body of a program.
+A simple macro can be created by:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">macro</span> <span class="n">sayhello</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">:</span><span class="p">(</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Hello, &quot;</span><span class="p">,</span> <span class="o">$</span><span class="n">name</span><span class="p">)</span> <span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>and called by:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="nd">@sayhello</span> <span class="s">&quot;world!&quot;</span>
+</pre></div>
+</div>
+<p>Many useful macros are already predefined in base Julia or in various
+packages. For example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># time an expression</span>
+<span class="nd">@time</span> <span class="n">sum</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># which function method will be used for specified args</span>
+<span class="nd">@which</span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># print generated LLVM bitcode for given type</span>
+<span class="nd">@code_llvm</span> <span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline"></a></h2>
+<p>The scope of a variable is the region of code within which a variable is visible.
+Certain constructs introduce <em>scope blocks</em>:</p>
+<ul class="simple">
+<li><p>Modules introduce a global scope that is separate from the global
+scopes of other modules.</p></li>
+<li><p>There is no all-encompassing global scope.</p></li>
+<li><p>Functions and macros define <em>hard</em> local scopes.</p></li>
+<li><p>for, while and try blocks and structs define <em>soft</em> local scopes.</p></li>
+</ul>
+<p>When <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">123</span></code> occurs in a local scope, the following rules apply:</p>
+<ul class="simple">
+<li><p>Existing local: If x is already a local variable, then the existing local <code class="docutils literal notranslate"><span class="pre">x</span></code> is assigned.</p></li>
+<li><p>Hard scope: If <code class="docutils literal notranslate"><span class="pre">x</span></code> is not already a local variable, a new local named <code class="docutils literal notranslate"><span class="pre">x</span></code>
+is created in the same scope.</p></li>
+<li><p>Soft scope: If <code class="docutils literal notranslate"><span class="pre">x</span></code> is not already a local variable the behavior depends on whether
+the <em>global</em> variable <code class="docutils literal notranslate"><span class="pre">x</span></code> is defined:</p>
+<ul>
+<li><p>if global <code class="docutils literal notranslate"><span class="pre">x</span></code> is undefined, a new local named <code class="docutils literal notranslate"><span class="pre">x</span></code> is created.</p></li>
+<li><p>if global <code class="docutils literal notranslate"><span class="pre">x</span></code> is defined, the assignment is considered ambiguous.</p></li>
+</ul>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">123</span> <span class="c"># global</span>
+
+<span class="k">function</span> <span class="n">greet</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="s">&quot;hello&quot;</span> <span class="c"># new local</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">greet</span><span class="p">()</span>  <span class="c"># gives &quot;hello&quot;</span>
+<span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c"># gives 123</span>
+
+<span class="k">function</span> <span class="n">greet2</span><span class="p">()</span>
+    <span class="k">global</span> <span class="n">x</span> <span class="o">=</span> <span class="s">&quot;hello&quot;</span>
+<span class="k">end</span>
+
+<span class="n">greet2</span><span class="p">()</span>
+<span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c"># gives &quot;hello&quot; (global x redefined)</span>
+</pre></div>
+</div>
+<p>Further details can be found at
+<a class="reference external" href="https://docs.julialang.org/en/v1/manual/variables-and-scoping/">https://docs.julialang.org/en/v1/manual/variables-and-scoping/</a></p>
+</div>
+<div class="section" id="style-conventions">
+<h2>Style conventions<a class="headerlink" href="#style-conventions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Names of variables are in lower case.</p></li>
+<li><p>Word separation can be indicated by underscores (<cite>_</cite>), but use of
+underscores is discouraged unless the name would be hard to read
+otherwise.</p></li>
+<li><p>Names of Types and Modules begin with a capital letter and word
+separation is shown with upper camel case instead of underscores.</p></li>
+<li><p>Names of functions and macros are in lower case, without underscores.</p></li>
+<li><p>Functions that write to their arguments have names that end in
+<code class="docutils literal notranslate"><span class="pre">!</span></code>. These are sometimes called “mutating” or “in-place” functions
+because they are intended to produce changes in their arguments
+after the function is called, not just return a value.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../" class="btn btn-neutral float-left" title="Julia for high-performance scientific computing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../motivation/" class="btn btn-neutral float-right" title="Motivation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

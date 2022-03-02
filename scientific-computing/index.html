@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scientific computing and data science &mdash; Julia for High-Performance Scientific Computing</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Writing performant Julia code" href="../performant-code/" />
+    <link rel="prev" title="Developing in Julia" href="../development/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> Julia for High-Performance Scientific Computing
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Prerequisites</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Julia primer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Special features of Julia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/">Developing in Julia</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scientific computing and data science</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ecosystem-of-scientific-computing-packages">Ecosystem of scientific computing packages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mathematics">Mathematics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scientific-domains">Scientific domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-sciences">Data sciences</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-data">Working with data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download-a-dataset">Download a dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataframes">Dataframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#machine-learning-in-julia">Machine learning in Julia</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#traditional-machine-learning">Traditional machine learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deep-learning">Deep learning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../performant-code/">Writing performant Julia code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization/">Parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU/">GPU programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outlook/">Outlook</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">Julia for High-Performance Scientific Computing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Scientific computing and data science</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/enccs/Julia-for-HPC/blob/master/content/scientific-computing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="scientific-computing-and-data-science">
+<span id="scientific-computing"></span><h1>Scientific computing and data science<a class="headerlink" href="#scientific-computing-and-data-science" title="Permalink to this headline"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>What libraries are available for scientific computing in Julia?</p></li>
+<li><p>How can I manipulate and wrangle data in Julia?</p></li>
+<li><p>Can I use Julia for machine learning?</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching</p></li>
+<li><p>30 min exercises</p></li>
+</ul>
+</div>
+<div class="section" id="ecosystem-of-scientific-computing-packages">
+<h2>Ecosystem of scientific computing packages<a class="headerlink" href="#ecosystem-of-scientific-computing-packages" title="Permalink to this headline"></a></h2>
+<p>Julia has a rich and rapidly expanding ecosystem of packages for scientific computing
+in many scientific domains. In many cases developers of individual packages join forces
+to create mutually compatible and supporting packages organized under a common GitHub
+organization. The following list can be of some help in navigating the ecosystem.</p>
+<div class="section" id="mathematics">
+<h3>Mathematics<a class="headerlink" href="#mathematics" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/JuliaDiff/">JuliaDiff</a>  – Differentiation tools</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaGeometry">JuliaGeometry</a>   – Computational Geometry</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaGraphs">JuliaGraphs</a>     – Graph Theory and Implementation</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaIntervals">JuliaIntervals</a>  - Rigorous numerics with interval arithmetic &amp; applications</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaMath">JuliaMath</a>       – Mathematics made easy in Julia</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaOpt">JuliaOpt</a>        – Optimization</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPolyhedra">JuliaPolyhedra</a>  – Polyhedral computation</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaSparse">JuliaSparse</a>     – Sparse matrix solvers</p></li>
+<li><p><a class="reference external" href="https://github.com/jump-dev">JuMP-dev</a>          - Modeling language for mathematical optimization</p></li>
+</ul>
+</div>
+<div class="section" id="scientific-domains">
+<h3>Scientific domains<a class="headerlink" href="#scientific-domains" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/BioJulia">BioJulia</a> – Biology</p></li>
+<li><p><a class="reference external" href="https://github.com/EcoJulia">EcoJulia</a>  – Ecology</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaAstro">JuliaAstro</a>  – Astronomy</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaDSP">JuliaDSP</a>  – Digital signal processing</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaQuant">JuliaQuant</a>  – Finance</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaQuantum">JuliaQuantum</a>  – Julia libraries for quantum science and technology</p></li>
+<li><p><a class="reference external" href="https://github.com/QuantumBFS/Yao.jl">QuantumBFS</a>  – Extensible, Efficient Quantum Algorithm Design for Humans</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPhysics">JuliaPhysics</a>  – Physics</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaDynamics">JuliaDynamics</a>  - Dynamical systems, nonlinear dynamics and chaos.</p></li>
+</ul>
+</div>
+<div class="section" id="data-sciences">
+<h3>Data sciences<a class="headerlink" href="#data-sciences" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SciML">SciML</a>   – Scientific machine learning</p></li>
+<li><p><a class="reference external" href="https://github.com/FluxML/">FluxML</a> - Machine learning stack</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaML">JuliaML</a>  – Machine Learning</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaStats">JuliaStats</a>  – Statistics</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaImages">JuliaImages</a>  – Image Processing</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaText">JuliaText</a>  – Natural Language Processing  (NLP), Computational Linguistics and (textual) Information Retrieval</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaDatabases">JuliaDatabases</a> – Various database drivers for Julia</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaData">JuliaData</a> – Data manipulation, storage, and I/O in Julia</p></li>
+</ul>
+<div class="admonition-scientific-computing-libraries discussion attention admonition" id="discussion-0">
+<p class="admonition-title">Scientific computing libraries</p>
+<ul class="simple">
+<li><p>Which, if any, libraries and packages do you use for scientific computing?</p></li>
+<li><p>Do you see something interesting in the list above?</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="working-with-data">
+<h2>Working with data<a class="headerlink" href="#working-with-data" title="Permalink to this headline"></a></h2>
+<p>We will now explore a Julian approach to a use case common to
+many scientific disciplines: manipulating data, visualization
+and machine learning.
+Julia is a good language to use for data science problems as
+it will perform well and alleviate the need to translate
+computationally demanding parts to another language.</p>
+<p>Here we will learn how to work with data using
+the DataFrames package, visualize it with the Plots and StatsPlots
+packages and get a flavor for how to set up a
+deep learning workflow using the Flux package.</p>
+<div class="section" id="download-a-dataset">
+<h3>Download a dataset<a class="headerlink" href="#download-a-dataset" title="Permalink to this headline"></a></h3>
+<p>We start by downloading a dataset containing measurements
+of characteristic features of different penguin species.</p>
+<div class="figure align-center" id="id1">
+<img alt="../_images/lter_penguins.png" src="../_images/lter_penguins.png" />
+<p class="caption"><span class="caption-text">Artwork by &#64;allison_horst</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</div>
+<p>To obtain the data we simply add the PalmerPenguins package.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PalmerPenguins&quot;</span><span class="p">)</span>
+<span class="k">using</span> <span class="n">PalmerPenguins</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dataframes">
+<h3>Dataframes<a class="headerlink" href="#dataframes" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://dataframes.juliadata.org/stable/">DataFrames.jl</a>
+package is Julia’s version of the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> library in Python and
+the <code class="docutils literal notranslate"><span class="pre">data.frame()</span></code> function in R. We will use it here to
+analyze the penguins dataset, but first we need to install it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;DataFrames&quot;</span><span class="p">)</span>
+<span class="k">using</span> <span class="n">DataFrames</span>
+</pre></div>
+</div>
+<p>A dataframe is a 2-dimensional table of rows and columns, much
+like a Excel spreadsheet. The rows usually represent independent
+observations, while the columns represent the
+features (variables) for each observation. Just like in Python and R,
+the DataFrames.jl package provides functionality for data
+manipulation and analysis.
+Here’s how you can create a new dataframe:</p>
+<blockquote>
+<div><div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">DataFrames</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Ali&quot;</span><span class="p">,</span> <span class="s">&quot;Clara&quot;</span><span class="p">,</span> <span class="s">&quot;Jingfei&quot;</span><span class="p">,</span> <span class="s">&quot;Stefan&quot;</span><span class="p">]</span>
+<span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;25&quot;</span><span class="p">,</span> <span class="s">&quot;39&quot;</span><span class="p">,</span> <span class="s">&quot;64&quot;</span><span class="p">,</span> <span class="s">&quot;45&quot;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(;</span> <span class="n">name</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="n">age</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>4×2 DataFrame
+Row │ first_name  age
+    │ String      String
+────┼────────────────────
+  1 │ Ali         25
+  2 │ Clara       39
+  3 │ Jingfei     64
+  4 │ Stefan      45
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition-dataframes type-along important admonition" id="type-along-0">
+<p class="admonition-title">Dataframes</p>
+<p>We now create a dataframe containing the PalmerPenguins dataset.
+Note that the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable is of type <code class="docutils literal notranslate"><span class="pre">CSV.File</span></code>; the
+PalmerPenguins package uses the <a class="reference external" href="https://csv.juliadata.org/stable/">CSV.jl</a>
+package for fast loading of data. Note further that <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> can
+accept a <code class="docutils literal notranslate"><span class="pre">CSV.File</span></code> object and read it into a dataframe!</p>
+<p>We will do this in a new script <code class="docutils literal notranslate"><span class="pre">datascience.jl</span></code> in the same directory as
+the <code class="docutils literal notranslate"><span class="pre">datascience</span></code> environment created in
+<a class="reference internal" href="../development/#datascience-env"><span class="std std-ref">this earlier exercise</span></a>. We can execute the expressions
+in the script line-by-line by hitting <cite>Shift-Enter</cite>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">PalmerPenguins</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">PalmerPenguins</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="c"># the raw data can be loaded by</span>
+<span class="c">#tableraw = PalmerPenguins.load(; raw = true)</span>
+
+<span class="n">first</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>344×7 DataFrame
+ Row │ species    island     bill_length_mm  bill_depth_mm  flipper_length_mm  body_mass_g  sex
+     │ String     String     Float64?        Float64?       Int64?             Int64?       String?
+─────┼──────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ Adelie   Torgersen            39.1           18.7                181         3750  male
+   2 │ Adelie   Torgersen            39.5           17.4                186         3800  female
+   3 │ Adelie   Torgersen            40.3           18.0                195         3250  female
+   4 │ Adelie   Torgersen       missing        missing              missing      missing  missing
+   5 │ Adelie   Torgersen            36.7           19.3                193         3450  female
+</pre></div>
+</div>
+<p>We can inspect the data using a few basic operations:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># slicing</span>
+<span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="c"># slicing and column name (can also use &quot;island&quot;)</span>
+<span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">20</span><span class="o">:</span><span class="mi">100</span><span class="p">,</span> <span class="ss">:island</span><span class="p">]</span>
+
+<span class="c"># dot syntax (editing will change the dataframe)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">species</span>
+
+<span class="c"># get a copy of a column</span>
+<span class="n">df</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="p">[</span><span class="ss">:sex</span><span class="p">,</span> <span class="ss">:body_mass_g</span><span class="p">]]</span>
+
+<span class="c"># access column directly without copying (editing will change the dataframe)</span>
+<span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_length_mm</span><span class="p">]</span>
+
+<span class="c"># get size</span>
+<span class="n">size</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">ncol</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">nrow</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="c"># find unique species</span>
+<span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">species</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Summary statistics can be displayed with the <code class="docutils literal notranslate"><span class="pre">describe</span></code> function:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>7×7 DataFrame
+ Row │ variable           mean     min     median  max        nmissing  eltype
+     │ Symbol             Union…   Any     Union…  Any        Int64     Type
+─────┼──────────────────────────────────────────────────────────────────────────────────────────
+   1 │ species                     Adelie          Gentoo            0  String
+   2 │ island                      Biscoe          Torgersen         0  String
+   3 │ bill_length_mm     43.9219  32.1    44.45   59.6              2  Union{Missing, Float64}
+   4 │ bill_depth_mm      17.1512  13.1    17.3    21.5              2  Union{Missing, Float64}
+   5 │ flipper_length_mm  200.915  172     197.0   231               2  Union{Missing, Int64}
+   6 │ body_mass_g        4201.75  2700    4050.0  6300              2  Union{Missing, Int64}
+   7 │ sex                         female          male             11  Union{Missing, String}
+</pre></div>
+</div>
+<p>We can see in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code> that the element type of
+all the columns is a union of <code class="docutils literal notranslate"><span class="pre">missing</span></code> and a numeric type. This
+implies that our dataset contains missing values.</p>
+<p>We can remove these by the <code class="docutils literal notranslate"><span class="pre">dropmissing</span></code> or <code class="docutils literal notranslate"><span class="pre">dropmissing!</span></code> functions
+(what is the difference between them?):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">dropmissing!</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The main features we are interested in for each penguin observation are
+<cite>bill_length_mm</cite>, <cite>bill_depth_mm</cite>, <cite>flipper_length_mm</cite> and <cite>body_mass_g</cite>.
+What the first three features mean is illustrated in the picture below.</p>
+<div class="figure align-center" id="id2">
+<img alt="../_images/culmen_depth.png" src="../_images/culmen_depth.png" />
+<p class="caption"><span class="caption-text">Artwork by &#64;allison_horst</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</div>
+</div>
+<div class="section" id="plotting">
+<h3>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline"></a></h3>
+<p>Let us now look at different ways to visualize this data.
+Many different plotting libraries exist for Julia and which
+one to use will depend on the specific use case as well as
+personal preference.</p>
+<div class="admonition-some-plotting-packages-in-julia callout admonition" id="callout-0">
+<p class="admonition-title">Some plotting packages in Julia</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://docs.juliaplots.org/latest/">Plots.jl</a>: high-level
+API for working with several different plotting back-ends, including <cite>GR</cite>,
+<cite>Matplotlib.Pyplot</cite>, <cite>Plotly</cite> and <cite>PlotlyJS</cite>.</p></li>
+<li><p><a class="reference external" href="https://github.com/JuliaPlots/StatsPlots.jl">StatsPlots.jl</a>: was moved
+out from core <cite>Plots.jl</cite>. Focuses on statistical use-cases and supports
+specialized statistical plotting functionalities.</p></li>
+<li><p><a class="reference external" href="http://gadflyjl.org/stable/">GadFly.jl</a>: based largely on
+<a class="reference external" href="https://ggplot2.tidyverse.org/">ggplot2 for R</a> and the book
+<a class="reference external" href="https://www.cs.uic.edu/~wilkinson/TheGrammarOfGraphics/GOG.html">The Grammar of Graphics</a>.
+Well suited for statistics and machine learning.</p></li>
+<li><p><a class="reference external" href="https://www.queryverse.org/VegaLite.jl/stable/">VegaLite.jl</a>: based on
+<a class="reference external" href="https://vega.github.io/vega-lite/">Vega-Lite</a>, a grammar of interactive graphics.
+Great for interactive graphics.</p></li>
+<li><p><a class="reference external" href="https://makie.juliaplots.org/stable/">Makie.jl</a> data visualization ecosystem with backends
+<cite>GLMakie.jl</cite> (OpenCL), <cite>CairoMakie.jl</cite> (Cairo) and <cite>WGLMakie.jl</cite> (WebGL).
+Good for publication-quality plotting but can be a bit slow to load and use.</p></li>
+</ul>
+</div>
+<p>We will be using <cite>Plots.jl</cite> and <cite>StatsPlots.jl</cite> but we encourage to explore these
+other packages to find the one that best fits your use case.</p>
+<p>First we install <cite>Plots.jl</cite> and <cite>StatsPlots</cite> backend:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Plots&quot;</span><span class="p">)</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;StatsPlots&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here’s how a simple line plot works:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Plots</span>
+<span class="n">gr</span><span class="p">()</span>  <span class="c"># set the backend to GR</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="mi">10</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;Two Lines&quot;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Line 1&quot;</span> <span class="s">&quot;Line 2&quot;</span><span class="p">],</span> <span class="n">lw</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In VSCode, the plot should appear in a new plot pane.
+We can add labels:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">xlabel!</span><span class="p">(</span><span class="s">&quot;x label&quot;</span><span class="p">)</span>
+<span class="n">ylabel!</span><span class="p">(</span><span class="s">&quot;y label&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To add a line to an existing plot, we mutate it with <code class="docutils literal notranslate"><span class="pre">plot!</span></code>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plot!</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally we can save to the plot to a file:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">savefig</span><span class="p">(</span><span class="s">&quot;myplot.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multiple subplots can be created by:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">p1</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span> <span class="c"># Make a line plot</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span> <span class="c"># Make a scatter plot</span>
+<span class="n">p3</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">xlabel</span> <span class="o">=</span> <span class="s">&quot;This one is labelled&quot;</span><span class="p">,</span> <span class="n">lw</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;Subtitle&quot;</span><span class="p">);</span>
+<span class="n">p4</span> <span class="o">=</span> <span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span> <span class="c"># Four histograms each with 10 points? Why not!</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">p4</span><span class="p">,</span> <span class="n">layout</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">legend</span> <span class="o">=</span> <span class="nb">false</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-visualizing-the-penguin-dataset type-along important admonition" id="type-along-1">
+<p class="admonition-title">Visualizing the Penguin dataset</p>
+<p>First load <code class="docutils literal notranslate"><span class="pre">Plots</span></code> and set the backend to GR (precompilation of Plots
+might take some time):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Plots</span>
+<span class="n">gr</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For the Penguin dataset it is more appropriate to use scatter plots, for example:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_length_mm</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_depth_mm</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We can adjust the markers by <a class="reference external" href="https://juliagraphics.github.io/Colors.jl/stable/namedcolors/">this list of named colors</a>
+and <a class="reference external" href="https://docs.juliaplots.org/latest/generated/unicodeplots/#unicodeplots-ref13">this list of marker types</a>:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_length_mm</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_depth_mm</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="ss">:hexagon</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="ss">:magenta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also change the plot theme according to <a class="reference external" href="https://docs.juliaplots.org/latest/generated/plotthemes/">this list of themes</a>,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">theme</span><span class="p">(:</span><span class="n">dark</span><span class="p">)</span>
+<span class="c1"># then re-execute the scatter function</span>
+</pre></div>
+</div>
+<p>We can add a dimension to the plot by grouping by another column. Let’s see if
+the different penguin species can be distiguished based on their bill length
+and bill depth. We also set different marker shapes and colors based on the
+grouping, and adjust the markersize and transparency (<code class="docutils literal notranslate"><span class="pre">alpha</span></code>):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_length_mm</span><span class="p">],</span>
+        <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:bill_depth_mm</span><span class="p">],</span>
+        <span class="n">xlabel</span> <span class="o">=</span> <span class="s">&quot;bill length (mm)&quot;</span><span class="p">,</span>
+        <span class="n">ylabel</span> <span class="o">=</span> <span class="s">&quot;bill depth (g)&quot;</span><span class="p">,</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="ss">:species</span><span class="p">],</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:circle</span> <span class="ss">:ltriangle</span> <span class="ss">:star5</span><span class="p">],</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:magenta</span> <span class="ss">:springgreen</span> <span class="ss">:blue</span><span class="p">],</span>
+        <span class="n">markersize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/penguin_scatter.png"><img alt="../_images/penguin_scatter.png" src="../_images/penguin_scatter.png" style="width: 300.0px; height: 200.0px;" /></a>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">scatter</span></code> function comes from the base <cite>Plots</cite> package. <cite>StatsPlots</cite> provides
+many other types of plot types, for example <code class="docutils literal notranslate"><span class="pre">density</span></code>. To use dataframes with <cite>StatsPlots</cite>
+we need to use the <code class="docutils literal notranslate"><span class="pre">&#64;df</span></code> macro which allows passing columns as symbols (this can also be used
+for <code class="docutils literal notranslate"><span class="pre">scatter</span></code> and other plot functions):</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">StatsPlots</span>
+
+<span class="nd">@df</span> <span class="n">df</span> <span class="n">density</span><span class="p">(</span><span class="ss">:flipper_length_mm</span><span class="p">,</span>
+               <span class="n">xlabel</span> <span class="o">=</span> <span class="s">&quot;flipper length (mm)&quot;</span><span class="p">,</span>
+               <span class="n">group</span> <span class="o">=</span> <span class="ss">:species</span><span class="p">,</span>
+               <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:magenta</span> <span class="ss">:springgreen</span> <span class="ss">:blue</span><span class="p">],</span>
+               <span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/penguin_density.png"><img alt="../_images/penguin_density.png" src="../_images/penguin_density.png" style="width: 300.0px; height: 200.0px;" /></a>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="machine-learning-in-julia">
+<h2>Machine learning in Julia<a class="headerlink" href="#machine-learning-in-julia" title="Permalink to this headline"></a></h2>
+<p>Despite being a relatively new language, Julia already has a strong and rapidly expanding
+ecosystem of libraries for machine learning and deep learning. A fundamental advantage of Julia for ML
+is that it solves the two-language problem - there is no need for different languages for the
+user-facing framework and the backend heavy-lifting (like for most other DL frameworks).</p>
+<p>A particular focus in the Julia approach to ML is <a class="reference external" href="https://sciml.ai/">“scientific machine learning” (SciML)</a>
+(a.k.a. physics-informed learning), i.e. machine learning which incorporates scientific models into
+the learning process instead of relying only on data. The core principle of SciML is <cite>differentiable
+programming</cite> - the ability to automatically differentiate any code and thus incorporate it into
+Flux models.</p>
+<p>However, Julia is still behind frameworks like PyTorch and Tensorflow/Keras in terms of documentation and API design.</p>
+<div class="section" id="traditional-machine-learning">
+<h3>Traditional machine learning<a class="headerlink" href="#traditional-machine-learning" title="Permalink to this headline"></a></h3>
+<p>Julia has packages for traditional (non-deep) machine learning:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://scikitlearnjl.readthedocs.io/en/latest/">ScikitLearn.jl</a> is a port of the popular Python package.</p></li>
+<li><p><a class="reference external" href="https://alan-turing-institute.github.io/MLJ.jl/dev/">MLJ.jl</a> provides a common interface
+and meta-algorithms for selecting, tuning, evaluating, composing and comparing over 150 machine learning models.</p></li>
+</ul>
+<p>We will use a few utility functions from <code class="docutils literal notranslate"><span class="pre">MLJ.jl</span></code> in our deep learning
+exercise below, so we will need to add it to our environment:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;MLJ&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="deep-learning">
+<h3>Deep learning<a class="headerlink" href="#deep-learning" title="Permalink to this headline"></a></h3>
+<p><a class="reference external" href="https://fluxml.ai/">Flux.jl</a> comes “batteries-included” with many useful tools
+built in, but also enables the user to write own Julia code for DL components.</p>
+<ul class="simple">
+<li><p>Flux has relatively few explicit APIs for features like regularisation or embeddings.</p></li>
+<li><p>All of Flux is straightforward Julia code and it can be worth to inspect and extend it if needed.</p></li>
+<li><p>Flux works well with other Julia libraries, like dataframes, images and differential equation solvers.
+One can build complex data processing pipelines that integrate Flux models.</p></li>
+</ul>
+<p>To install Flux:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Pkg</span>
+<span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Flux&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-training-a-deep-neural-network-to-classify-penguins type-along important admonition" id="type-along-2">
+<p class="admonition-title">Training a deep neural network to classify penguins</p>
+<p>To train a model we need four things:</p>
+<ul class="simple">
+<li><p>A collection of data points that will be provided to the objective
+function.</p></li>
+<li><p>A objective (cost or loss) function, that evaluates how well a model
+is doing given some input data.</p></li>
+<li><p>The definition of a model and access to its trainable parameters.</p></li>
+<li><p>An optimiser that will update the model parameters appropriately.</p></li>
+</ul>
+<p>First we import the required modules and load the data:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Flux</span>
+<span class="k">using</span> <span class="n">MLJ</span><span class="o">:</span> <span class="n">partition</span><span class="p">,</span> <span class="n">ConfusionMatrix</span>
+<span class="k">using</span> <span class="n">DataFrames</span>
+<span class="k">using</span> <span class="n">PalmerPenguins</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">PalmerPenguins</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+<span class="n">dropmissing!</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now preprocess our dataset to make it suitable for training a network:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># select feature and label columns</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">Not</span><span class="p">([</span><span class="ss">:species</span><span class="p">,</span> <span class="ss">:sex</span><span class="p">,</span> <span class="ss">:island</span><span class="p">]))</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="ss">:species</span><span class="p">]</span>
+
+<span class="c"># split into training and testing parts</span>
+<span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">xtest</span><span class="p">),</span> <span class="p">(</span><span class="n">ytrain</span><span class="p">,</span> <span class="n">ytest</span><span class="p">)</span> <span class="o">=</span> <span class="n">partition</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">multi</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span>
+
+<span class="c"># use single precision and transpose arrays</span>
+<span class="n">xtrain</span><span class="p">,</span> <span class="n">xtest</span> <span class="o">=</span> <span class="kt">Float32</span><span class="o">.</span><span class="p">(</span><span class="kt">Array</span><span class="p">(</span><span class="n">xtrain</span><span class="p">)</span><span class="o">&#39;</span><span class="p">),</span> <span class="kt">Float32</span><span class="o">.</span><span class="p">(</span><span class="kt">Array</span><span class="p">(</span><span class="n">xtest</span><span class="p">)</span><span class="o">&#39;</span><span class="p">)</span>
+
+<span class="c"># one-hot encoding</span>
+<span class="n">ytrain</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onehotbatch</span><span class="p">(</span><span class="n">ytrain</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+<span class="n">ytest</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onehotbatch</span><span class="p">(</span><span class="n">ytest</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+
+<span class="c"># count penguin classes to see if it&#39;s balanced</span>
+<span class="n">sum</span><span class="p">(</span><span class="n">ytrain</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sum</span><span class="p">(</span><span class="n">ytest</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next up is the loss function which will be minimized during the training.
+We also define another function which will give us the accuracy of the model:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># we use the cross-entropy loss function typically used for classification</span>
+<span class="n">loss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">crossentropy</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c"># onecold (opposite to onehot) gives back the original representation</span>
+<span class="k">function</span> <span class="n">accuracy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sum</span><span class="p">(</span><span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">.==</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="n">size</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">model</span></code> will be our neural network, so we go ahead and define it:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_neurons</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">(</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_neurons</span><span class="p">,</span> <span class="n">sigmoid</span><span class="p">),</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span>
+        <span class="n">softmax</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We now define an anonymous callback function to pass into the training function
+to monitor the progress, select the standard ADAM optimizer, and extract the parameters
+of the model:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">callback</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="nd">@show</span><span class="p">(</span><span class="n">loss</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">))</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">ADAM</span><span class="p">()</span>
+<span class="n">θ</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">params</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Before training the model, let’s have a look at some initial predictions
+and the accuracy:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># predictions before training</span>
+<span class="n">model</span><span class="p">(</span><span class="n">xtrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">1</span><span class="o">:</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">ytrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">1</span><span class="o">:</span><span class="mi">5</span><span class="p">]</span>
+<span class="c"># accuracy before training</span>
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)</span>
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtest</span><span class="p">,</span> <span class="n">ytest</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally we are ready to train the model. Let’s run 100 epochs:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># the training data and the labels can be passed as tuples to train!</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="mi">10</span>
+    <span class="n">Flux</span><span class="o">.</span><span class="n">train!</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">θ</span><span class="p">,</span> <span class="p">[(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)],</span> <span class="n">opt</span><span class="p">,</span> <span class="n">cb</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">throttle</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="c"># check final accuracy</span>
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)</span>
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtest</span><span class="p">,</span> <span class="n">ytest</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The performance of the model is probably somewhat underwhelming, but you will
+fix that in an exercise below!</p>
+<p>We finally create a confusion matrix to quantify the performance of the model:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">predicted_species</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">xtest</span><span class="p">),</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+<span class="n">true_species</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">ytest</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+<span class="n">ConfusionMatrix</span><span class="p">()(</span><span class="n">predicted_species</span><span class="p">,</span> <span class="n">true_species</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<div class="admonition-create-a-custom-plotting-function exercise important admonition" id="exercise-0">
+<p class="admonition-title">Create a custom plotting function</p>
+<p>Convert the final <code class="docutils literal notranslate"><span class="pre">scatter</span></code> plot in the type-along section “Visualizing the Penguin dataset”
+and convert it into a <code class="docutils literal notranslate"><span class="pre">create_scatterplot</span></code> function:</p>
+<ul class="simple">
+<li><p>The function should take as arguments a dataframe and two column symbols.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">minimum()</span></code> and <code class="docutils literal notranslate"><span class="pre">maximum()</span></code> functions to automatically set the x-range of the plot
+using the <code class="docutils literal notranslate"><span class="pre">xlim</span> <span class="pre">=</span> <span class="pre">(xmin,</span> <span class="pre">xmax)</span></code> argument to <code class="docutils literal notranslate"><span class="pre">scatter()</span></code>.</p></li>
+<li><p>If you have time, try grouping the data by <code class="docutils literal notranslate"><span class="pre">:island</span></code> or <code class="docutils literal notranslate"><span class="pre">:sex</span></code> instead of <code class="docutils literal notranslate"><span class="pre">:species</span></code>
+(keep in mind that you may need to adjust the number of marker symbols and colors).</p></li>
+<li><p>If you have more time, play around with the plot appearance using <code class="docutils literal notranslate"><span class="pre">theme()</span></code> and the marker symbols and colors.</p></li>
+</ul>
+<div class="admonition-solution solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Solution</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">create_scatterplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">groupby</span><span class="p">)</span>
+    <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">minimum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">col1</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">col1</span><span class="p">])</span>
+    <span class="c"># markers and colors to use for the groups</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:circle</span> <span class="ss">:ltriangle</span> <span class="ss">:star5</span> <span class="ss">:rect</span> <span class="ss">:diamond</span> <span class="ss">:hexagon</span><span class="p">]</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="ss">:magenta</span> <span class="ss">:springgreen</span> <span class="ss">:blue</span> <span class="ss">:coral2</span> <span class="ss">:gold3</span> <span class="ss">:purple</span><span class="p">]</span>
+    <span class="c"># number of unique groups can&#39;t be larger than the number of colors/markers</span>
+    <span class="n">ngroups</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">groupby</span><span class="p">]))</span>
+    <span class="nd">@assert</span> <span class="n">ngroups</span> <span class="o">&lt;=</span> <span class="n">length</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+
+    <span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="n">col1</span><span class="p">],</span>
+            <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="n">col2</span><span class="p">],</span>
+            <span class="n">xlabel</span> <span class="o">=</span> <span class="n">col1</span><span class="p">,</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="n">col2</span><span class="p">,</span>
+            <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">),</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">!</span><span class="p">,</span> <span class="n">groupby</span><span class="p">],</span>
+            <span class="n">marker</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="o">:</span><span class="n">ngroups</span><span class="p">],</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="o">:</span><span class="n">ngroups</span><span class="p">],</span>
+            <span class="n">markersize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span>
+            <span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">create_scatterplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="ss">:bill_length_mm</span><span class="p">,</span> <span class="ss">:body_mass_g</span><span class="p">,</span> <span class="ss">:sex</span><span class="p">)</span>
+<span class="n">create_scatterplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="ss">:flipper_length_mm</span><span class="p">,</span> <span class="ss">:body_mass_g</span><span class="p">,</span> <span class="ss">:island</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-improve-the-deep-learning-model exercise important admonition" id="exercise-1">
+<span id="dlexercise"></span><p class="admonition-title">Improve the deep learning model</p>
+<p>Improve the performance of the neural network we trained above!
+The network is not improving much because of the large numerical
+range of the input features (from around 15 to around 6000) combined
+with the fact that we use a <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> activation function. A standard
+method in machine learning is to normalize features by “batch
+normalization”. Replace the network definition with the following and
+see if the performance improves:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_neurons</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">(</span>
+           <span class="n">Dense</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_neurons</span><span class="p">),</span>
+           <span class="n">BatchNorm</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">relu</span><span class="p">),</span>
+           <span class="n">Dense</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span>
+           <span class="n">softmax</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Performance is usually better also if we, instead of training on the entire
+dataset at once, divide the training data into “minibatches” and update
+the network weights on each minibatch separately.
+First define the following function:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">StatsBase</span><span class="o">:</span> <span class="n">sample</span>
+
+<span class="k">function</span> <span class="n">create_minibatches</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">n_batch</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">minibatches</span> <span class="o">=</span> <span class="kt">Tuple</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">n_batch</span>
+        <span class="n">randinds</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">size</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">push!</span><span class="p">(</span><span class="n">minibatches</span><span class="p">,</span> <span class="p">(</span><span class="n">xtrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">randinds</span><span class="p">],</span> <span class="n">ytrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">randinds</span><span class="p">]))</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">minibatches</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>and then create the minibatches by calling the function.</p>
+<p>You will not need to manually loop over the minibatches, simply pass
+the <code class="docutils literal notranslate"><span class="pre">minibatches</span></code> vector of tuples to the <code class="docutils literal notranslate"><span class="pre">Flux.train!</span></code> function.
+Does this make a difference?</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">Solution</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">create_minibatches</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">n_batch</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">minibatches</span> <span class="o">=</span> <span class="kt">Tuple</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">n_batch</span>
+        <span class="n">randinds</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">size</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">push!</span><span class="p">(</span><span class="n">minibatches</span><span class="p">,</span> <span class="p">(</span><span class="n">xtrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">randinds</span><span class="p">],</span> <span class="n">ytrain</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">randinds</span><span class="p">]))</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">minibatches</span>
+<span class="k">end</span>
+
+<span class="n">n_features</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="n">n_neurons</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">(</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_neurons</span><span class="p">),</span>
+        <span class="n">BatchNorm</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">relu</span><span class="p">),</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">n_neurons</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span>
+        <span class="n">softmax</span><span class="p">)</span>
+
+<span class="n">callback</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="nd">@show</span><span class="p">(</span><span class="n">loss</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">))</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">ADAM</span><span class="p">()</span>
+<span class="n">θ</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">params</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="n">minibatches</span> <span class="o">=</span> <span class="n">create_minibatches</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="mi">100</span>
+    <span class="c"># train on minibatches</span>
+    <span class="n">Flux</span><span class="o">.</span><span class="n">train!</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">θ</span><span class="p">,</span> <span class="n">minibatches</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">cb</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">throttle</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+<span class="k">end</span>
+
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtrain</span><span class="p">,</span> <span class="n">ytrain</span><span class="p">)</span>
+<span class="c"># 0.9849624060150376</span>
+<span class="n">accuracy</span><span class="p">(</span><span class="n">xtest</span><span class="p">,</span> <span class="n">ytest</span><span class="p">)</span>
+<span class="c"># 0.9850746268656716</span>
+
+<span class="n">predicted_species</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">xtest</span><span class="p">),</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+<span class="n">true_species</span> <span class="o">=</span> <span class="n">Flux</span><span class="o">.</span><span class="n">onecold</span><span class="p">(</span><span class="n">ytest</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="s">&quot;Chinstrap&quot;</span><span class="p">])</span>
+<span class="n">ConfusionMatrix</span><span class="p">()(</span><span class="n">predicted_species</span><span class="p">,</span> <span class="n">true_species</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="../_images/confusion_matrix.png"><img alt="../_images/confusion_matrix.png" src="../_images/confusion_matrix.png" style="width: 343.20000000000005px; height: 128.8px;" /></a>
+</div>
+<p>Much better!</p>
+</div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<ul>
+<li><p>Many interesting datasets are available in Julia through the
+<a class="reference external" href="https://github.com/JuliaStats/RDatasets.jl">RDatasets</a> package.
+For instance:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;RDatasets&quot;</span><span class="p">)</span>
+<span class="k">using</span> <span class="n">RDatasets</span>
+<span class="c"># load a couple of datasets</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">,</span> <span class="s">&quot;iris&quot;</span><span class="p">)</span>
+<span class="n">neuro</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">(</span><span class="s">&quot;boot&quot;</span><span class="p">,</span> <span class="s">&quot;neuro&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference external" href="https://towardsdatascience.com/the-future-of-machine-learning-and-why-it-looks-a-lot-like-julia-a0e26b51f6a6">“The Future of Machine Learning and why it looks a lot like Julia” by Logan Kilpatrick</a></p></li>
+<li><p><a class="reference external" href="https://fluxml.ai/tutorials/2020/09/15/deep-learning-flux.html">Deep Learning with Flux - A 60 Minute Blitz</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../development/" class="btn btn-neutral float-left" title="Developing in Julia" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../performant-code/" class="btn btn-neutral float-right" title="Writing performant Julia code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, EuroCC National Competence Center Sweden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
